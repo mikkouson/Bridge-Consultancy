@@ -9,6 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { signOutAction } from "@/app/login/action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -25,8 +26,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { sign } from "crypto";
-import { signOutAction } from "@/app/login/action";
 
 export function NavUser({
   user,
