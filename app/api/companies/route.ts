@@ -4,7 +4,10 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from("companies").select("*");
+  const { data, error } = await supabase
+    .from("companies")
+    .select("*")
+    .is("deleted_at", null);
 
   if (error) {
     console.error("Supabase error:", error);

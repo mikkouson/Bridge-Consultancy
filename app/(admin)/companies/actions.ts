@@ -25,3 +25,20 @@ export async function createNewCompany(formData: CompanySchemaType) {
     return data;
   }
 }
+
+export async function deleteCompanies(id: number) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("companies")
+    .update({
+      deleted_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  } else {
+    return true;
+  }
+}
