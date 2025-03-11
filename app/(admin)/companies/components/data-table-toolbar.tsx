@@ -8,6 +8,7 @@ import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DataTableViewOptions } from "./data-table-view-options";
+import { SheetDemo } from "@/components/sheet";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -54,7 +55,10 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex gap-2">
+        <DataTableViewOptions table={table} />
+        <SheetDemo />
+      </div>
     </div>
   );
 }

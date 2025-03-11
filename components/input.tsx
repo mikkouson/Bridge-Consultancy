@@ -55,15 +55,18 @@ export function InputForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid grid-cols-1 md:grid-cols-1 gap-4 mb-8 mt-4"
+      >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Company Name</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Company Name" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -77,7 +80,7 @@ export function InputForm() {
             <FormItem>
               <FormLabel>Representative</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Representative" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -91,7 +94,7 @@ export function InputForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Email" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -105,7 +108,7 @@ export function InputForm() {
             <FormItem>
               <FormLabel>Contact </FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Contact" {...field} />
               </FormControl>
 
               <FormMessage />
