@@ -10,6 +10,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 export function AlertDialogDemo({ id }: { id: number }) {
@@ -26,18 +27,12 @@ export function AlertDialogDemo({ id }: { id: number }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-destructive text-left"
-        >
-          Delete
-        </Button>
+        <Trash2 className=" cursor-pointer text-gray-600  hover:text-destructive" />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            {id}
             This action cannot be undone. This will permanently delete your
             account and remove your data from our servers.
           </AlertDialogDescription>

@@ -42,3 +42,29 @@ export async function deleteCompanies(id: number) {
     return true;
   }
 }
+
+export async function updateCompany(formData: CompanySchemaType) {
+  const result = CompanySchema.safeParse(formData);
+
+  if (!result.success) {
+    throw new Error("Invalid form data");
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("companies")
+    .update({
+      name: formData.name,
+      representative: formData.representative,
+      email: formData.email,
+      contact: formData.contact,
+    })
+    .eq("id", formData.id);
+
+  if (error) {
+    throw new Error(error.message);
+  } else {
+    return data;
+  }
+}

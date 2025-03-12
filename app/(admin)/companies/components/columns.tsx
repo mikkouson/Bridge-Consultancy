@@ -3,19 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { Comapany } from "@/app/types/database.type";
-export const columns: ColumnDef<Comapany>[] = [
-  {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[40px] text-center">{row.getValue("id")}</div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+import { CompanySchemaType } from "@/app/types/companies.type";
+export const columns: ColumnDef<CompanySchemaType>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -69,6 +58,9 @@ export const columns: ColumnDef<Comapany>[] = [
     enableHiding: false,
   },
   {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Actions" />
+    ),
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
   },
