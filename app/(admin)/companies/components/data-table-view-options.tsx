@@ -15,6 +15,7 @@ import { Settings2 } from "lucide-react";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
+  data: TData[];
 }
 
 export function DataTableViewOptions<TData>({

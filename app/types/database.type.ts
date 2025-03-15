@@ -5,8 +5,7 @@ export type Json =
   | null
   | { [key: string]: Json | undefined }
   | Json[];
-
-export type Comapany = Database["public"]["Tables"]["companies"]["Row"];
+export type Company = Database["public"]["Tables"]["companies"]["Row"];
 
 export type Database = {
   public: {
@@ -14,6 +13,7 @@ export type Database = {
       companies: {
         Row: {
           contact: string | null;
+          deleted_at: string | null;
           email: string | null;
           id: number;
           name: string | null;
@@ -21,6 +21,7 @@ export type Database = {
         };
         Insert: {
           contact?: string | null;
+          deleted_at?: string | null;
           email?: string | null;
           id?: number;
           name?: string | null;
@@ -28,6 +29,7 @@ export type Database = {
         };
         Update: {
           contact?: string | null;
+          deleted_at?: string | null;
           email?: string | null;
           id?: number;
           name?: string | null;

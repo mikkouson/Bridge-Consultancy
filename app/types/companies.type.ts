@@ -10,6 +10,7 @@ export const CompanySchema = z.object({
   contact: z.string().min(10, {
     message: "Contact must be at least 10 characters.",
   }),
+  deleted_at: z.string().optional(),
 });
 
 export type CompanySchemaType = z.infer<typeof CompanySchema>;
