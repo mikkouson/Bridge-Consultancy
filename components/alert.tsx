@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export function AlertDialogDemo({ id }: { id: number }) {
@@ -22,10 +23,13 @@ export function AlertDialogDemo({ id }: { id: number }) {
 
   const handleDelete = async () => {
     await deleteCompanies(id);
+    form.reset();
+    setOpen(false);
   };
 
+  const [open, setOpen] = useState(false);
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Trash2 className=" cursor-pointer text-gray-600  hover:text-destructive" />
       </AlertDialogTrigger>
