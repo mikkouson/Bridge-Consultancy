@@ -9,10 +9,12 @@ import {
 import { FilePenLine } from "lucide-react";
 import { EditCompany } from "./edit-company";
 import { CompanySchemaType } from "@/app/types/companies.type";
+import { useState } from "react";
 
 export function EditCompanySheet({ data }: { data: CompanySchemaType }) {
+  const [open, setOpen] = useState(false);
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <FilePenLine className=" cursor-pointer text-gray-600 hover:text-green-500 " />
       </SheetTrigger>
@@ -39,7 +41,7 @@ export function EditCompanySheet({ data }: { data: CompanySchemaType }) {
             Fill in the details to create a new company.
           </SheetDescription>
         </SheetHeader>
-        <EditCompany data={data} />
+        <EditCompany data={data} setOpen={setOpen} />
       </SheetContent>
     </Sheet>
   );
