@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 
-export function InputForm() {
+export function InputForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
     defaultValues: {
@@ -44,6 +44,8 @@ export function InputForm() {
         title: "Success",
         description: "Company created successfully",
       });
+      setOpen(false);
+      form.reset();
     } catch (error) {
       toast({
         title: "Error",
