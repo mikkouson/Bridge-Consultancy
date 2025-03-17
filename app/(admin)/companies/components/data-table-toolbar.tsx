@@ -7,7 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
 import { ArrowDownToLine, X } from "lucide-react";
 import { CSVLink } from "react-csv";
-import { DataTableViewOptions } from "./data-table-view-options";
+// import { DataTableViewOptions } from "./data-table-view-options";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface DataTableToolbarProps<TData extends object> {
   table: Table<TData>;
@@ -42,15 +51,38 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
         )}
       </div>
       <div className="flex gap-2">
-        {/* Export CSV */}
-        <CSVLink data={data} filename="companies.csv">
-          <Button variant="outline" size="sm" className="text-sm px-2">
-            <ArrowDownToLine size={14} />
-            <span className="sr-only sm:not-sr-only ml-2">Export CSV</span>
-          </Button>
-        </CSVLink>
-        <PdfExport data={data} />
-        <DataTableViewOptions table={table} data={data} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto hidden h-8 lg:flex"
+            >
+              <ArrowDownToLine />
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[150px]">
+            <DropdownMenuLabel>Select Type</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                {" "}
+                <CSVLink data={data} filename="companies.csv">
+                  CSV
+                </CSVLink>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <PdfExport data={data} />
+              </DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Keyboard shortcuts</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* <DataTableViewOptions table={table} data={data} /> */}
         <SheetDemo />
       </div>
     </div>

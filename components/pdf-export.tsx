@@ -1,15 +1,14 @@
 "use client";
+import { CompanySchemaType } from "@/app/types/companies.type";
+import { Button } from "@/components/ui/button";
 import {
-  PDFDownloadLink,
   Document,
   Page,
+  PDFDownloadLink,
   StyleSheet,
   Text,
   View,
 } from "@react-pdf/renderer";
-import { Button } from "@/components/ui/button";
-import { FileText } from "lucide-react";
-import { CompanySchemaType } from "@/app/types/companies.type";
 
 const styles = StyleSheet.create({
   page: { padding: 20 },
@@ -58,7 +57,7 @@ const PDFTable = ({ data }: { data: CompanySchemaType[] }) => {
             <View key={index} style={styles.row}>
               {Object.keys(row).map((key) => (
                 <Text key={key} style={styles.cell}>
-                  {String((row as Record<string, any>)[key]) || "-"}
+                  {String(row[key as keyof typeof row]) || "-"}
                 </Text>
               ))}
             </View>
@@ -74,12 +73,16 @@ export const PdfExport = ({ data }: { data: CompanySchemaType[] }) => {
     <PDFDownloadLink
       document={<PDFTable data={data} />}
       fileName="companies.pdf"
+      className="w-full"
     >
       {({ loading }) => (
-        <Button variant="outline" size="sm" className="text-sm px-2">
-          <FileText size={14} />
-          <span className="sr-only sm:not-sr-only ml-2">
-            {loading ? "Generating..." : "Export PDF"}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-sm  w-full text-left justify-start p-0"
+        >
+          <span className=" w-ful text-left">
+            {loading ? "Exporting..." : "PDF"}
           </span>
         </Button>
       )}
