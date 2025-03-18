@@ -1,7 +1,7 @@
 "use client";
 import { useCompany } from "@/app/hooks/use-company";
-import { columns } from "./components/columns";
-import { DataTable } from "./components/data-table";
+import { columns } from "../../../components/companies/columns";
+import { DataTable } from "../../../components/companies/data-table";
 
 export default function TaskPage() {
   // const tasks = await getTasks();

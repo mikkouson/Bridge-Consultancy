@@ -5,7 +5,7 @@ import { CompanyForm } from "@/components/companies/form";
 import { DeleteConfirmationDialog } from "@/components/delete-dialog";
 import { SheetModal } from "@/components/sheet-modal";
 import { Row } from "@tanstack/react-table";
-import { deleteCompanies } from "../actions";
+import { deleteCompanies } from "../../app/(admin)/companies/actions";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
