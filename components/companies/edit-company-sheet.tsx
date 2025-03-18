@@ -36,9 +36,9 @@ export function EditCompanySheet({ data }: { data: CompanySchemaType }) {
         }}
       >
         <SheetHeader>
-          <SheetTitle>Create Company</SheetTitle>
+          <SheetTitle>Edit Company</SheetTitle>
           <SheetDescription>
-            Fill in the details to create a new company.
+            Update the details below to modify the company information.
           </SheetDescription>
         </SheetHeader>
         <EditCompany data={data} setOpen={setOpen} />

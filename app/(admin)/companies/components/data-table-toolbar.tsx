@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
 import { ArrowDownToLine, X } from "lucide-react";
 import { CSVLink } from "react-csv";
-// import { DataTableViewOptions } from "./data-table-view-options";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,8 +80,6 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {/* <DataTableViewOptions table={table} data={data} /> */}
         <SheetDemo />
       </div>
     </div>
