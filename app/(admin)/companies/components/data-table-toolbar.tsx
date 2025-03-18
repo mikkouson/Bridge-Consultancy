@@ -1,12 +1,9 @@
 "use client";
 import { CompanySchemaType } from "@/app/types/companies.type";
+import { InputForm } from "@/components/input";
 import { PdfExport } from "@/components/pdf-export";
-import { SheetDemo } from "@/components/sheet";
+import { SheetModal } from "@/components/sheet-modal";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table } from "@tanstack/react-table";
-import { ArrowDownToLine, X } from "lucide-react";
-import { CSVLink } from "react-csv";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +13,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Table } from "@tanstack/react-table";
+import { ArrowDownToLine, X } from "lucide-react";
+import { CSVLink } from "react-csv";
 
 interface DataTableToolbarProps<TData extends object> {
   table: Table<TData>;
@@ -32,7 +33,7 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter company name..."
+          placeholder="Filter service name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
@@ -80,7 +81,13 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-        <SheetDemo />
+        <SheetModal
+          triggerLabel="Create Company"
+          title="Create Company"
+          description="Fill in the details to create a new company."
+        >
+          {(setOpen) => <InputForm setOpen={setOpen} />}
+        </SheetModal>
       </div>
     </div>
   );
