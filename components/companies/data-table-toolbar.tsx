@@ -68,16 +68,21 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
 
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                {" "}
-                <CSVLink data={data} filename="companies.csv">
+                <CSVLink
+                  data={data}
+                  filename="companies.csv"
+                  className="w-full"
+                >
                   CSV
                 </CSVLink>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <PdfExport data={data} />
+                <PdfExport
+                  title="Company Report"
+                  data={data}
+                  fileName="company_report.pdf"
+                />
               </DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Keyboard shortcuts</DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
