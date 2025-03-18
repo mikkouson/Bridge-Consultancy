@@ -43,7 +43,9 @@ export async function deleteCompanies(id: number) {
   }
 }
 
-export async function updateCompany(formData: CompanySchemaType) {
+export async function updateCompany(
+  formData: CompanySchemaType
+): Promise<void> {
   const result = CompanySchema.safeParse(formData);
 
   if (!result.success) {
@@ -64,7 +66,5 @@ export async function updateCompany(formData: CompanySchemaType) {
 
   if (error) {
     throw new Error(error.message);
-  } else {
-    return data;
   }
 }

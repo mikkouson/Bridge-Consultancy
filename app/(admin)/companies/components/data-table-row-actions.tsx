@@ -1,11 +1,11 @@
 "use client";
 
-import { Row } from "@tanstack/react-table";
 import { CompanySchemaType } from "@/app/types/companies.type";
+import { CompanyForm } from "@/components/companies/form";
 import { DeleteConfirmationDialog } from "@/components/delete-dialog";
-import { deleteCompanies } from "../actions";
 import { SheetModal } from "@/components/sheet-modal";
-import { EditCompany } from "@/components/companies/edit-company";
+import { Row } from "@tanstack/react-table";
+import { deleteCompanies } from "../actions";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -22,7 +22,9 @@ export function DataTableRowActions<TData extends CompanySchemaType>({
         description="Fill in the details to create a new company."
         edit={true}
       >
-        {(setOpen) => <EditCompany data={row.original} setOpen={setOpen} />}
+        {(setOpen) => (
+          <CompanyForm data={row.original} setOpen={setOpen} action="edit" />
+        )}
       </SheetModal>
       <DeleteConfirmationDialog
         onConfirm={async () => {

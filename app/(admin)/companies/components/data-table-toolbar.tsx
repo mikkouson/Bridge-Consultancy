@@ -1,6 +1,6 @@
 "use client";
 import { CompanySchemaType } from "@/app/types/companies.type";
-import { InputForm } from "@/components/input";
+import { CompanyForm } from "@/components/companies/form";
 import { PdfExport } from "@/components/pdf-export";
 import { SheetModal } from "@/components/sheet-modal";
 import { Button } from "@/components/ui/button";
@@ -86,7 +86,7 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
           title="Create Company"
           description="Fill in the details to create a new company."
         >
-          {(setOpen) => <InputForm setOpen={setOpen} />}
+          {(setOpen) => <CompanyForm setOpen={setOpen} action="create" />}
         </SheetModal>
       </div>
     </div>
