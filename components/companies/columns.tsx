@@ -1,9 +1,9 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { CompanySchemaType } from "@/app/types/companies.type";
+import { DataTableColumnHeader } from "../data-table-column-header";
 export const columns: ColumnDef<CompanySchemaType>[] = [
   {
     accessorKey: "name",

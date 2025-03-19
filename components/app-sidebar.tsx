@@ -7,6 +7,7 @@ import {
   Receipt,
   Settings2,
   HandCoins,
+  CreditCard,
 } from "lucide-react";
 import * as React from "react";
 
@@ -56,6 +57,11 @@ const data = {
       title: "Services",
       url: "services",
       icon: HandCoins,
+    },
+    {
+      title: "Payment Options",
+      url: "payment-options",
+      icon: CreditCard,
     },
     {
       title: "Settings",
