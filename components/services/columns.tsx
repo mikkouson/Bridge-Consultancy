@@ -19,13 +19,13 @@ export const columns: ColumnDef<ServicesSchemaType>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "subject",
+    accessorKey: "description",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Subject" />
+      <DataTableColumnHeader column={column} title="Description" />
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.getValue("subject")}
+        {row.getValue("description")}
       </div>
     ),
     enableSorting: false,

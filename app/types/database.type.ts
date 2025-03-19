@@ -43,7 +43,7 @@ export type Database = {
           date: string | null;
           id: number;
           invoice_number: number | null;
-          subject: string | null;
+          description: string | null;
           trn: number | null;
         };
         Insert: {
@@ -51,7 +51,7 @@ export type Database = {
           date?: string | null;
           id?: number;
           invoice_number?: number | null;
-          subject?: string | null;
+          description?: string | null;
           trn?: number | null;
         };
         Update: {
@@ -59,7 +59,7 @@ export type Database = {
           date?: string | null;
           id?: number;
           invoice_number?: number | null;
-          subject?: string | null;
+          description?: string | null;
           trn?: number | null;
         };
         Relationships: [];
@@ -96,19 +96,19 @@ export type Database = {
           amount: number | null;
           id: number;
           name: string | null;
-          subject: string | null;
+          description: string | null;
         };
         Insert: {
           amount?: number | null;
           id?: number;
           name?: string | null;
-          subject?: string | null;
+          description?: string | null;
         };
         Update: {
           amount?: number | null;
           id?: number;
           name?: string | null;
-          subject?: string | null;
+          description?: string | null;
         };
         Relationships: [];
       };
