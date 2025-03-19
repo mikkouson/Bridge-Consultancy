@@ -37,13 +37,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const PDFTable = ({
-  title,
-  data,
-}: {
-  title: string;
-  data: Record<string, any>[];
-}) => {
+type TableData = {
+  [key: string]: string | number | boolean | null | undefined;
+};
+
+const PDFTable = ({ title, data }: { title: string; data: TableData[] }) => {
   if (data.length === 0) return null;
   const filteredData = data.map(({ id, deleted_at, ...rest }) => rest);
 
@@ -80,7 +78,7 @@ export const PdfExport = ({
   fileName,
 }: {
   title: string;
-  data: Record<string, any>[];
+  data: TableData[];
   fileName: string;
 }) => {
   return (

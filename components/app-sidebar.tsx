@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Receipt,
   Settings2,
+  HandCoins,
 } from "lucide-react";
 import * as React from "react";
 
@@ -50,6 +51,11 @@ const data = {
       title: "Invoices",
       url: "invoices",
       icon: Receipt,
+    },
+    {
+      title: "Services",
+      url: "services",
+      icon: HandCoins,
     },
     {
       title: "Settings",
