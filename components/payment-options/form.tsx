@@ -1,14 +1,13 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import {
-  createNewCompany,
-  updateCompany,
-} from "@/app/(admin)/companies/actions";
-import { CompanySchema, CompanySchemaType } from "@/app/types/companies.type";
+  createPaymentOption,
+  updatePaymentOption,
+} from "@/app/(admin)/payment-options/actions";
+import {
+  PaymentOptionsSchema,
+  PaymentOptionsSchemaType,
+} from "@/app/types/payment-options.type";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,34 +19,37 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-
-export function CompanyForm({
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+export function PaymentOptionsForm({
   data = {},
   setOpen,
   action,
 }: {
-  data?: Partial<CompanySchemaType>;
+  data?: Partial<PaymentOptionsSchemaType>;
   setOpen: (open: boolean) => void;
   action?: "create" | "edit";
 }) {
-  const form = useForm<z.infer<typeof CompanySchema>>({
-    resolver: zodResolver(CompanySchema),
+  const form = useForm<z.infer<typeof PaymentOptionsSchema>>({
+    resolver: zodResolver(PaymentOptionsSchema),
     defaultValues: {
-      id: data?.id ?? 0,
-      name: data?.name ?? "",
-      representative: data?.representative ?? "",
-      email: data?.email ?? "",
-      contact: data?.contact ?? "",
+      id: data.id ?? 0,
+      bank_name: data.bank_name ?? "",
+      account_name: data.account_name ?? "",
+      iban: data.iban ?? "",
+      swift_code: data.swift_code ?? "",
+      bank_address: data.bank_address ?? "",
     },
   });
   const { isSubmitting } = form.formState;
 
-  async function onSubmit(data: z.infer<typeof CompanySchema>) {
+  async function onSubmit(data: z.infer<typeof PaymentOptionsSchema>) {
     try {
       if (action === "edit") {
-        await updateCompany(data);
+        await updatePaymentOption(data);
       } else {
-        await createNewCompany(data);
+        await createPaymentOption(data);
       }
 
       toast({
@@ -72,38 +74,12 @@ export function CompanyForm({
       >
         <FormField
           control={form.control}
-          name="id"
-          render={({ field }) => (
-            <FormItem className="hidden">
-              <FormLabel>Company Id</FormLabel>
-              <FormControl>
-                <Input placeholder="Company Name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="id"
-          render={({ field }) => (
-            <FormItem className="hidden">
-              <FormLabel>Company Id</FormLabel>
-              <FormControl>
-                <Input placeholder="Company Name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="name"
+          name="bank_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Company Name</FormLabel>
+              <FormLabel>Bank Name</FormLabel>
               <FormControl>
-                <Input placeholder="Company Name" {...field} />
+                <Input placeholder="Bank Name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,46 +87,57 @@ export function CompanyForm({
         />
         <FormField
           control={form.control}
-          name="representative"
+          name="account_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Representative</FormLabel>
+              <FormLabel>Account Name</FormLabel>
               <FormControl>
-                <Input placeholder="Representative" {...field} />
+                <Input placeholder="Account Name" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="bank_address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bank Address </FormLabel>
+              <FormControl>
+                <Input placeholder="Bank Address" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="iban"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Iban</FormLabel>
+              <FormControl>
+                <Input placeholder="Iban" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="swift_code"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Swift Code </FormLabel>
+              <FormControl>
+                <Input placeholder="Swift Code" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Email" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="contact"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contact </FormLabel>
-              <FormControl>
-                <Input placeholder="Contact" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
