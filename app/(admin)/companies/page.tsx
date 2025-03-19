@@ -4,8 +4,6 @@ import { columns } from "../../../components/companies/columns";
 import { DataTable } from "../../../components/companies/data-table";
 
 export default function TaskPage() {
-  // const tasks = await getTasks();
-
   const { data } = useCompany();
   return (
     <div className=" h-full flex-1 flex-col space-y-8 px-2 flex">

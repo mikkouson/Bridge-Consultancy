@@ -54,7 +54,7 @@ export async function updateCompany(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("companies")
     .update({
       name: formData.name,
