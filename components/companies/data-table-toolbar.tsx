@@ -51,41 +51,43 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
         )}
       </div>
       <div className="flex gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto hidden h-8 lg:flex"
-            >
-              <ArrowDownToLine />
-              Export
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[150px]">
-            <DropdownMenuLabel>Select Type</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+        {data.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto hidden h-8 lg:flex"
+              >
+                <ArrowDownToLine />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[150px]">
+              <DropdownMenuLabel>Select Type</DropdownMenuLabel>
+              <DropdownMenuSeparator />
 
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CSVLink
-                  data={data}
-                  filename="companies.csv"
-                  className="w-full"
-                >
-                  CSV
-                </CSVLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <PdfExport
-                  title="Company Report"
-                  data={data}
-                  fileName="company_report.pdf"
-                />
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuGroup>
+                <DropdownMenuItem disabled={data.length === 0}>
+                  <CSVLink
+                    data={data}
+                    filename="companies.csv"
+                    className="w-full"
+                  >
+                    CSV
+                  </CSVLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={data.length === 0}>
+                  <PdfExport
+                    title="Company Report"
+                    data={data}
+                    fileName="company_report.pdf"
+                  />
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         <SheetModal
           triggerLabel="Create Company"
           title="Create Company"

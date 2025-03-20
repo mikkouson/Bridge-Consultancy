@@ -51,37 +51,44 @@ export function DataTableToolbar<TData extends ServicesSchemaType>({
         )}
       </div>
       <div className="flex gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto hidden h-8 lg:flex"
-            >
-              <ArrowDownToLine />
-              Export
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[150px]">
-            <DropdownMenuLabel>Select Type</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+        {data.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto hidden h-8 lg:flex"
+              >
+                <ArrowDownToLine />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[150px]">
+              <DropdownMenuLabel>Select Type</DropdownMenuLabel>
+              <DropdownMenuSeparator />
 
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CSVLink data={data} filename="services.csv" className="w-full">
-                  CSV
-                </CSVLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <PdfExport
-                  title="Services Report"
-                  data={data}
-                  fileName="services_report.pdf"
-                />
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <CSVLink
+                    data={data}
+                    filename="services.csv"
+                    className="w-full"
+                  >
+                    CSV
+                  </CSVLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <PdfExport
+                    title="Services Report"
+                    data={data}
+                    fileName="services_report.pdf"
+                  />
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         <SheetModal
           triggerLabel="Create Service"
           title="Create Service"
