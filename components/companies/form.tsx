@@ -33,7 +33,7 @@ export function CompanyForm({
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
     defaultValues: {
-      id: data?.id ?? 0,
+      id: data?.id ?? "",
       name: data?.name ?? "",
       representative: data?.representative ?? "",
       email: data?.email ?? "",

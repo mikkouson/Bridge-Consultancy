@@ -34,7 +34,7 @@ export function PaymentOptionsForm({
   const form = useForm<z.infer<typeof PaymentOptionsSchema>>({
     resolver: zodResolver(PaymentOptionsSchema),
     defaultValues: {
-      id: data.id ?? 0,
+      id: data.id ?? "",
       bank_name: data.bank_name ?? "",
       account_name: data.account_name ?? "",
       iban: data.iban ?? "",

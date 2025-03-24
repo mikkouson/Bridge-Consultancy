@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const CompanySchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   name: z.string().min(1, { message: "Name must be at least 1 character." }),
   representative: z.string().min(1, {
     message: "Representative must be at least 1 character.",

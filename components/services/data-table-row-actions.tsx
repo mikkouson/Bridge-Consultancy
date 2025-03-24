@@ -28,7 +28,7 @@ export function DataTableRowActions<TData extends ServicesSchemaType>({
       </SheetModal>
       <DeleteConfirmationDialog
         onConfirm={async () => {
-          await deleteService((row.original as { id: number }).id);
+          await deleteService((row.original as { id: string }).id);
         }}
         title="Delete Service?"
         description="This will permanently remove the service."

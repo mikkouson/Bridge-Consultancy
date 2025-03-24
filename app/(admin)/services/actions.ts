@@ -25,7 +25,7 @@ export async function createService(formData: ServicesSchemaType) {
   }
 }
 
-export async function deleteService(id: number) {
+export async function deleteService(id: string) {
   const supabase = await createClient();
 
   const { error } = await supabase

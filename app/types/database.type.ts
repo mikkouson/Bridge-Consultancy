@@ -15,7 +15,7 @@ export type Database = {
           contact: string | null;
           deleted_at: string | null;
           email: string | null;
-          id: number;
+          id: string;
           name: string | null;
           representative: string | null;
         };
@@ -41,7 +41,7 @@ export type Database = {
         Row: {
           amount: number | null;
           date: string | null;
-          id: number;
+          id: string;
           invoice_number: number | null;
           description: string | null;
           trn: number | null;
@@ -69,7 +69,7 @@ export type Database = {
           account_name: string | null;
           bank_name: string | null;
           iban: string | null;
-          id: number;
+          id: string;
           payment_method: string | null;
           switf_code: string | null;
         };
@@ -94,7 +94,7 @@ export type Database = {
       services: {
         Row: {
           amount: number | null;
-          id: number;
+          id: string;
           name: string | null;
           description: string | null;
         };

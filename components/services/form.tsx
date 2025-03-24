@@ -29,7 +29,7 @@ export function ServiceForm({
   const form = useForm<z.infer<typeof ServicesSchema>>({
     resolver: zodResolver(ServicesSchema),
     defaultValues: {
-      id: data?.id ?? 0,
+      id: data?.id ?? "",
       name: data?.name ?? "",
       description: data?.description ?? "",
       amount: data?.amount ?? 0,

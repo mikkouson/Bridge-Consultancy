@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const ServicesSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   name: z.string().min(1, { message: "Name must be at least 1 character." }),
   description: z.string().min(1, {
     message: "Description must be at least 1 character.",

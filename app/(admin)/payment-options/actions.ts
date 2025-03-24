@@ -30,7 +30,7 @@ export async function createPaymentOption(formData: PaymentOptionsSchemaType) {
   }
 }
 
-export async function deletePaymentOption(id: number) {
+export async function deletePaymentOption(id: string) {
   const supabase = await createClient();
 
   const { error } = await supabase
