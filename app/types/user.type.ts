@@ -21,3 +21,9 @@ export const UserSchema = z
   });
 
 export type UserSchemaType = z.infer<typeof UserSchema>;
+
+export const InviteUserSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
+export type InviteUserSchemaType = z.infer<typeof InviteUserSchema>;

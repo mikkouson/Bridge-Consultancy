@@ -17,6 +17,7 @@ import { Table } from "@tanstack/react-table";
 import { ArrowDownToLine, X } from "lucide-react";
 import { CSVLink } from "react-csv";
 import { UserForm } from "./form";
+import { InviteUser } from "../invitation-modal";
 
 interface DataTableToolbarProps<TData extends object> {
   table: Table<TData>;
@@ -84,6 +85,7 @@ export function DataTableToolbar<TData extends UserSchemaType>({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+        <InviteUser />
 
         <SheetModal
           triggerLabel="New User"

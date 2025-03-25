@@ -4,7 +4,12 @@ import {
   UpdateUserSchema,
   UpdateUserSchemaType,
 } from "@/app/types/update-user.type";
-import { UserSchema, UserSchemaType } from "@/app/types/user.type";
+import {
+  InviteUserSchema,
+  InviteUserSchemaType,
+  UserSchema,
+  UserSchemaType,
+} from "@/app/types/user.type";
 import { createAdminClient } from "@/utils/supabase/server";
 
 export async function createUser(formData: UserSchemaType) {
@@ -80,4 +85,20 @@ export async function updateUser(formData: UpdateUserSchemaType) {
   }
 
   return data;
+}
+
+export async function InviteNewUser(formData: InviteUserSchemaType) {
+  const result = InviteUserSchema.safeParse(formData);
+
+  if (!result.success) {
+    throw new Error("Invalid form data");
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase.auth.admin.inviteUserByEmail(formData.email); // Pass string directly
+
+  if (error) {
+    console.error("Supabase Error:", error);
+    throw new Error(error.message);
+  }
 }
