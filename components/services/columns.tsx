@@ -17,6 +17,10 @@ export const columns: ColumnDef<ServicesSchemaType>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+    filterFn: (row, columnId, filterValue) => {
+      const cellValue = row.getValue(columnId) as string;
+      return cellValue?.toLowerCase().includes(filterValue.toLowerCase());
+    },
   },
   {
     accessorKey: "description",

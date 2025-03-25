@@ -41,7 +41,7 @@ export function SheetModal({
         )}
       </SheetTrigger>
       <SheetContent
-        className="w-full md:w-[900px] overflow-auto"
+        className="w-full md:w-[400px] overflow-auto"
         onInteractOutside={(e) => {
           const hasPacContainer = e.composedPath().some((el: EventTarget) => {
             if ("classList" in el) {

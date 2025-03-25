@@ -86,9 +86,9 @@ export function DataTableToolbar<TData extends UserSchemaType>({
         )}
 
         <SheetModal
-          triggerLabel="Create Service"
-          title="Create Service"
-          description="Fill in the details to create a new service."
+          triggerLabel="New User"
+          title="New User"
+          description="Fill in the details to create a new user."
         >
           {(setOpen) => <UserForm setOpen={setOpen} action="create" />}
         </SheetModal>
