@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import {
   ForgotPasswordSchema,
   ForgotPasswordSchemaType,
-} from "../types/auth.type";
+} from "../../types/auth.type";
 
 export async function resetPassword(
   formData: ForgotPasswordSchemaType

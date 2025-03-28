@@ -1,10 +1,10 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
 import {
   ResetPasswordSchema,
   ResetPasswordSchemaType,
-} from "../types/auth.type";
+} from "@/app/types/auth.type";
+import { createClient } from "@/utils/supabase/server";
 
 export async function resetPassword(
   formData: ResetPasswordSchemaType

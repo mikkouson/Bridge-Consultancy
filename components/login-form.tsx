@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginWithGoogle, signInAction } from "@/app/login/action";
+import { loginWithGoogle, signInAction } from "@/app/(auth)/login/action";
 import { SubmitButton } from "./submit-button";
 import { FormMessage, Message } from "./form-message";
 import Link from "next/link";
