@@ -6,6 +6,8 @@ import { SheetModal } from "@/components/sheet-modal";
 import { deleteUser } from "@/app/(admin)/users/actions";
 import { UserSchemaType } from "@/app/types/user.type";
 import { EditUserForm } from "./edit-user";
+import { EmailModal } from "../invitation-modal";
+import { Separator } from "../ui/separator";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -23,7 +25,11 @@ export function DataTableRowActions<TData extends UserSchemaType>({
         edit={true}
       >
         {(setOpen) => (
-          <EditUserForm data={row.original} setOpen={setOpen} action="edit" />
+          <div>
+            <EditUserForm data={row.original} setOpen={setOpen} action="edit" />
+            <Separator orientation="horizontal" className="my-4" />
+            <EmailModal action="reset" />
+          </div>
         )}
       </SheetModal>
       <DeleteConfirmationDialog

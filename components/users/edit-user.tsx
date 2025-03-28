@@ -1,6 +1,10 @@
 "use client";
 
 import { updateUser } from "@/app/(admin)/users/actions";
+import {
+  UpdateUserSchema,
+  UpdateUserSchemaType,
+} from "@/app/types/update-user.type";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,15 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Label } from "../ui/label";
-import {
-  UpdateUserSchema,
-  UpdateUserSchemaType,
-} from "@/app/types/update-user.type";
+import ConfirmPasswordField from "../confirmPassword";
 import PasswordInput from "../update-password";
 
 export function EditUserForm({
@@ -43,9 +41,6 @@ export function EditUserForm({
     },
   });
   const { isSubmitting } = form.formState;
-  const [isConfirmVisible, setIsConfirmVisible] = useState<boolean>(false);
-
-  const toggleConfirmVisibility = () => setIsConfirmVisible((prev) => !prev);
   async function onSubmit(data: z.infer<typeof UpdateUserSchema>) {
     try {
       if (action === "edit") {
@@ -114,45 +109,27 @@ export function EditUserForm({
             </FormItem>
           )}
         />
-        <PasswordInput form={form} name="password" label="Password" />
         <FormField
           control={form.control}
-          name="confirmPassword"
+          name="password"
           render={({ field }) => (
-            <FormItem>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <FormControl>
-                  <Input
-                    id="confirmPassword"
-                    disabled={(form.watch("password") || "").length < 7}
-                    className="pe-9"
-                    placeholder="Confirm Password"
-                    type={isConfirmVisible ? "text" : "password"}
-                    {...field}
-                  />
-                </FormControl>
-                <button
-                  className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                  type="button"
-                  onClick={toggleConfirmVisibility}
-                  aria-label={
-                    isConfirmVisible ? "Hide password" : "Show password"
-                  }
-                  aria-pressed={isConfirmVisible}
-                >
-                  {isConfirmVisible ? (
-                    <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
-                  ) : (
-                    <Eye size={16} strokeWidth={2} aria-hidden="true" />
-                  )}
-                </button>
-              </div>
-              <FormMessage />
-            </FormItem>
+            <PasswordInput
+              label="Password"
+              {...field}
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              showStrengthMeter
+            />
           )}
         />
 
+        <ConfirmPasswordField
+          control={form.control}
+          name="confirmPassword"
+          label="Confirm Password"
+          placeholder="Confirm Password"
+          disabled={(form.watch("password") || "").length < 7}
+        />
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>

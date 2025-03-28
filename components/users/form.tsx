@@ -42,10 +42,8 @@ export function UserForm({
     },
   });
   const { isSubmitting } = form.formState;
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState<boolean>(false);
 
-  const togglePasswordVisibility = () => setIsPasswordVisible((prev) => !prev);
   const toggleConfirmVisibility = () => setIsConfirmVisible((prev) => !prev);
   async function onSubmit(data: z.infer<typeof UserSchema>) {
     try {

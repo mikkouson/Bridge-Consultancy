@@ -2,29 +2,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { UpdateUserSchemaType } from "@/app/types/update-user.type";
 
 interface PasswordInputProps {
-  form: UseFormReturn<UpdateUserSchemaType>;
-  name: keyof UpdateUserSchemaType;
-  label: string;
+  name: string;
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  id?: string;
+  className?: string;
+  showStrengthMeter?: boolean;
 }
 
 export default function PasswordInput({
-  form,
   name,
   label,
+  value,
+  onChange,
+  id = name,
+  className,
+  showStrengthMeter = true,
 }: PasswordInputProps) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-
-  const password = form.watch("password") || "";
 
   const toggleVisibility = () => setIsVisible((prev) => !prev);
 
@@ -36,7 +34,7 @@ export default function PasswordInput({
   ];
 
   const strength = requirements.map((req) => ({
-    met: req.regex.test(password),
+    met: req.regex.test(value),
     text: req.text,
   }));
 
@@ -58,42 +56,40 @@ export default function PasswordInput({
   };
 
   return (
-    <FormField
-      control={form.control}
-      name={name as keyof UpdateUserSchemaType}
-      render={({ field }) => (
-        <FormItem>
-          <Label htmlFor={name}>{label}</Label>
-          <div className="space-y-2">
-            <div className="relative">
-              <FormControl>
-                <Input
-                  id="password"
-                  className="pe-9"
-                  placeholder="Password"
-                  type={isVisible ? "text" : "password"}
-                  {...field}
-                  value={field.value ?? ""} // Ensure the value is always defined
-                  aria-invalid={strengthScore < 4}
-                  aria-describedby="password-strength"
-                />
-              </FormControl>
-              <button
-                className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                type="button"
-                onClick={toggleVisibility}
-                aria-label={isVisible ? "Hide password" : "Show password"}
-                aria-pressed={isVisible}
-                aria-controls="password"
-              >
-                {isVisible ? (
-                  <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
-                ) : (
-                  <Eye size={16} strokeWidth={2} aria-hidden="true" />
-                )}
-              </button>
-            </div>
+    <div className={className}>
+      {label && <Label htmlFor={id}>{label}</Label>}
+      <div className="space-y-2">
+        <div className="relative">
+          <Input
+            id={id}
+            className="pe-9"
+            placeholder="Password"
+            type={isVisible ? "text" : "password"}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            aria-invalid={showStrengthMeter && strengthScore < 4}
+            aria-describedby={
+              showStrengthMeter ? "password-strength" : undefined
+            }
+          />
+          <button
+            className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+            type="button"
+            onClick={toggleVisibility}
+            aria-label={isVisible ? "Hide password" : "Show password"}
+            aria-pressed={isVisible}
+            aria-controls={id}
+          >
+            {isVisible ? (
+              <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
+            ) : (
+              <Eye size={16} strokeWidth={2} aria-hidden="true" />
+            )}
+          </button>
+        </div>
 
+        {showStrengthMeter && (
+          <>
             {/* Password strength indicator */}
             <div
               className="mb-4 mt-3 h-1 w-full overflow-hidden rounded-full bg-border"
@@ -151,10 +147,9 @@ export default function PasswordInput({
                 </li>
               ))}
             </ul>
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+          </>
+        )}
+      </div>
+    </div>
   );
 }

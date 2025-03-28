@@ -1,4 +1,4 @@
-import { InviteNewUser } from "@/app/(admin)/users/actions";
+import { InviteNewUser, ResetPassword } from "@/app/(admin)/users/actions";
 import { InviteUserSchema } from "@/app/types/user.type";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +27,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Mail } from "lucide-react";
 
-export function InviteUser() {
+export function EmailModal({ action }: { action: "invite" | "reset" }) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof InviteUserSchema>>({
@@ -41,7 +41,12 @@ export function InviteUser() {
 
   async function onSubmit(data: z.infer<typeof InviteUserSchema>) {
     try {
-      await InviteNewUser(data);
+      if (action === "invite") {
+        await InviteNewUser(data);
+      } else {
+        await ResetPassword(data);
+      }
+
       toast({
         title: "Success",
         description: "User invited successfully",
@@ -61,14 +66,15 @@ export function InviteUser() {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Mail />
-          Invite User
+          {action === "invite" ? "Invite User" : "Reset Password"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Share link</DialogTitle>
+          <DialogTitle>Invite a User</DialogTitle>
           <DialogDescription>
-            Anyone who has this link will be able to view this.
+            Enter the user&apos;s email address to send them an invitation. They
+            will receive an email with further instructions to join.
           </DialogDescription>
         </DialogHeader>
 

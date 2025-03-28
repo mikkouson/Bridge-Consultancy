@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { loginWithGoogle, signInAction } from "@/app/login/action";
 import { SubmitButton } from "./submit-button";
 import { FormMessage, Message } from "./form-message";
+import Link from "next/link";
 
 export function LoginForm({
   message,
@@ -62,12 +63,13 @@ export function LoginForm({
                 <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
+
+                    <Link
                       className="ml-auto text-sm underline-offset-4 hover:underline"
+                      href="/forgot-password"
                     >
                       Forgot your password?
-                    </a>
+                    </Link>
                   </div>
                   <Input
                     id="password"

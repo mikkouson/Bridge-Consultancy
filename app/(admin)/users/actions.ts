@@ -102,3 +102,19 @@ export async function InviteNewUser(formData: InviteUserSchemaType) {
     throw new Error(error.message);
   }
 }
+
+export async function ResetPassword(formData: InviteUserSchemaType) {
+  const result = InviteUserSchema.safeParse(formData);
+
+  if (!result.success) {
+    throw new Error("Invalid form data");
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(formData.email); // Pass string directly
+
+  if (error) {
+    console.error("Supabase Error:", error);
+    throw new Error(error.message);
+  }
+}
