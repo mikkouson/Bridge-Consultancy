@@ -87,8 +87,6 @@ body {
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -96,4 +94,9 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.popover-content-width-same-as-its-trigger {
+  width: var(--radix-popover-trigger-width);
+  max-height: var(--radix-popover-content-available-height);
 }

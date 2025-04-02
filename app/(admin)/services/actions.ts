@@ -16,6 +16,7 @@ export async function createService(formData: ServicesSchemaType) {
     name: formData.name,
     description: formData.description,
     amount: formData.amount,
+    vat: formData.vat,
   });
 
   if (error) {
@@ -25,7 +26,7 @@ export async function createService(formData: ServicesSchemaType) {
   }
 }
 
-export async function deleteService(id: string) {
+export async function deleteService(id: number) {
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -57,6 +58,7 @@ export async function updateService(formData: ServicesSchemaType) {
       name: formData.name,
       description: formData.description,
       amount: formData.amount,
+      vat: formData.vat,
     })
     .eq("id", formData.id);
 
