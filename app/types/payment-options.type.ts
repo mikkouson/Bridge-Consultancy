@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const PaymentOptionsSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   bank_name: z
     .string()
     .min(1, { message: "Bank Name must be at least 1 character." }),

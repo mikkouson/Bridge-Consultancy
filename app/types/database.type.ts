@@ -6,6 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 export type Company = Database["public"]["Tables"]["companies"]["Row"];
+export type Invoice = Database["public"]["Tables"]["invoices"]["Row"];
 
 export type Database = {
   public: {
@@ -15,7 +16,7 @@ export type Database = {
           contact: string | null;
           deleted_at: string | null;
           email: string | null;
-          id: string;
+          id: number;
           name: string | null;
           representative: string | null;
         };
@@ -37,78 +38,175 @@ export type Database = {
         };
         Relationships: [];
       };
-      invoice: {
+      invoice_services: {
         Row: {
-          amount: number | null;
-          date: string | null;
-          id: string;
-          invoice_number: number | null;
-          description: string | null;
-          trn: number | null;
+          id: number;
+          invoice_id: number;
+          service_date: string;
+          service_id: number;
         };
         Insert: {
-          amount?: number | null;
-          date?: string | null;
           id?: number;
-          invoice_number?: number | null;
-          description?: string | null;
-          trn?: number | null;
+          invoice_id: number;
+          service_date: string;
+          service_id: number;
         };
         Update: {
-          amount?: number | null;
-          date?: string | null;
           id?: number;
-          invoice_number?: number | null;
-          description?: string | null;
-          trn?: number | null;
+          invoice_id?: number;
+          service_date?: string;
+          service_id?: number;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "invoice_services_invoice_id_fkey";
+            columns: ["invoice_id"];
+            isOneToOne: false;
+            referencedRelation: "invoices";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoice_services_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      invoices: {
+        Row: {
+          companies: any;
+          company: number;
+          created_at: string;
+          date: string;
+          deleted_at: string | null;
+          id: number;
+          invoice_number: string;
+          payment_option: number;
+          total_amount: number;
+          vat: number;
+        };
+        Insert: {
+          company: number;
+          created_at?: string;
+          date: string;
+          deleted_at?: string | null;
+          id?: number;
+          invoice_number: string;
+          payment_option: number;
+          total_amount?: number;
+          vat?: number;
+        };
+        Update: {
+          company?: number;
+          created_at?: string;
+          date?: string;
+          deleted_at?: string | null;
+          id?: number;
+          invoice_number?: string;
+          payment_option?: number;
+          total_amount?: number;
+          vat?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoices_company_fkey";
+            columns: ["company"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_payment_option_fkey";
+            columns: ["payment_option"];
+            isOneToOne: false;
+            referencedRelation: "payment_options";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       payment_options: {
         Row: {
           account_name: string | null;
+          bank_address: string | null;
           bank_name: string | null;
+          deleted_at: string | null;
           iban: string | null;
-          id: string;
-          payment_method: string | null;
-          switf_code: string | null;
+          id: number;
+          swift_code: string | null;
         };
         Insert: {
           account_name?: string | null;
+          bank_address?: string | null;
           bank_name?: string | null;
+          deleted_at?: string | null;
           iban?: string | null;
           id?: number;
-          payment_method?: string | null;
-          switf_code?: string | null;
+          swift_code?: string | null;
         };
         Update: {
           account_name?: string | null;
+          bank_address?: string | null;
           bank_name?: string | null;
+          deleted_at?: string | null;
           iban?: string | null;
           id?: number;
-          payment_method?: string | null;
-          switf_code?: string | null;
+          swift_code?: string | null;
+        };
+        Relationships: [];
+      };
+      profiles: {
+        Row: {
+          avatar_url: string | null;
+          email: string | null;
+          fullname: string | null;
+          id: string;
+          name: string | null;
+          role: string | null;
+          username: string | null;
+        };
+        Insert: {
+          avatar_url?: string | null;
+          email?: string | null;
+          fullname?: string | null;
+          id: string;
+          name?: string | null;
+          role?: string | null;
+          username?: string | null;
+        };
+        Update: {
+          avatar_url?: string | null;
+          email?: string | null;
+          fullname?: string | null;
+          id?: string;
+          name?: string | null;
+          role?: string | null;
+          username?: string | null;
         };
         Relationships: [];
       };
       services: {
         Row: {
           amount: number | null;
-          id: string;
-          name: string | null;
+          deleted_at: string | null;
           description: string | null;
+          id: number;
+          name: string | null;
         };
         Insert: {
           amount?: number | null;
+          deleted_at?: string | null;
+          description?: string | null;
           id?: number;
           name?: string | null;
-          description?: string | null;
         };
         Update: {
           amount?: number | null;
+          deleted_at?: string | null;
+          description?: string | null;
           id?: number;
           name?: string | null;
-          description?: string | null;
         };
         Relationships: [];
       };
@@ -117,7 +215,20 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      check_user_exists: {
+        Args: {
+          email: string;
+        };
+        Returns: {
+          user_id: string;
+        }[];
+      };
+      get_all_user_emails: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          email: string;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
