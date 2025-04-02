@@ -38,7 +38,14 @@ const styles = StyleSheet.create({
 });
 
 type TableData = {
-  [key: string]: string | number | boolean | null | undefined;
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | Date
+    | Record<string, unknown>;
 };
 
 const PDFTable = ({ title, data }: { title: string; data: TableData[] }) => {
