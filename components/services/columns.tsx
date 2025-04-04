@@ -50,47 +50,6 @@ export const columns: ColumnDef<ServicesSchemaType>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "vat",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Vat" />
-    ),
-    cell: ({ row }) => {
-      const vatValue = row.getValue("vat");
-      return (
-        <div className="w-[120px] truncate font-medium">
-          {vatValue === true ? (
-            <Badge variant="outline" className="gap-1.5">
-              <span
-                className="size-1.5 rounded-full bg-emerald-500"
-                aria-hidden="true"
-              ></span>
-              Yes
-            </Badge>
-          ) : vatValue === false ? (
-            <Badge variant="outline" className="gap-1.5">
-              <span
-                className="size-1.5 rounded-full bg-red-500"
-                aria-hidden="true"
-              ></span>
-              No
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="gap-1.5">
-              <span
-                className="size-1.5 rounded-full bg-red-500"
-                aria-hidden="true"
-              ></span>
-              No
-            </Badge>
-          )}
-        </div>
-      );
-    },
-    enableSorting: false,
-    enableHiding: false,
-  },
-
-  {
     accessorKey: "vat_amount",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Vat Amount" />

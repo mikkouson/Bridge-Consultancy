@@ -9,7 +9,6 @@ export const ServicesSchema = z.object({
   amount: z.number().min(1, {
     message: "Amount must be at least 1 characters.",
   }),
-  vat: z.boolean().optional(),
   vat_amount: z.number().optional(),
   deleted_at: z.string().optional(),
 });
