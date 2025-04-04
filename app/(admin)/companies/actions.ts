@@ -26,7 +26,7 @@ export async function createNewCompany(formData: CompanySchemaType) {
   }
 }
 
-export async function deleteCompanies(id: string) {
+export async function deleteCompanies(id: number) {
   const supabase = await createClient();
 
   const { error } = await supabase

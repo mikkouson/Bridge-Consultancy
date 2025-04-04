@@ -36,7 +36,8 @@ export function NavMain({
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          const isActive = pathname === `/${item.url}`;
+          const itemUrl = `/${item.url.replace(/^\/+/, "")}`;
+          const isActive = pathname.startsWith(itemUrl);
 
           return (
             <Collapsible
@@ -46,7 +47,7 @@ export function NavMain({
               className="group/collapsible"
             >
               <SidebarMenuItem>
-                <Link href={item.url}>
+                <Link href={itemUrl}>
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={isActive ? "bg-gray-200 dark:bg-gray-700" : ""}
@@ -59,7 +60,8 @@ export function NavMain({
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items?.map((subItem) => {
-                      const isSubActive = pathname === `/${subItem.url}`;
+                      const subUrl = `/${subItem.url.replace(/^\/+/, "")}`;
+                      const isSubActive = pathname === subUrl;
 
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
@@ -69,9 +71,9 @@ export function NavMain({
                               isSubActive ? "bg-gray-200 dark:bg-gray-700" : ""
                             }
                           >
-                            <a href={subItem.url}>
+                            <Link href={subUrl}>
                               <span>{subItem.title}</span>
-                            </a>
+                            </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       );

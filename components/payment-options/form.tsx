@@ -34,7 +34,7 @@ export function PaymentOptionsForm({
   const form = useForm<z.infer<typeof PaymentOptionsSchema>>({
     resolver: zodResolver(PaymentOptionsSchema),
     defaultValues: {
-      id: data.id ?? "",
+      id: data.id ?? 0,
       bank_name: data.bank_name ?? "",
       account_name: data.account_name ?? "",
       iban: data.iban ?? "",
@@ -138,7 +138,7 @@ export function PaymentOptionsForm({
           )}
         />
 
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit">
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </form>

@@ -32,7 +32,7 @@ export function DataTableRowActions<TData extends PaymentOptionsSchemaType>({
       </SheetModal>
       <DeleteConfirmationDialog
         onConfirm={async () => {
-          await deletePaymentOption((row.original as { id: string }).id);
+          await deletePaymentOption((row.original as { id: number }).id);
         }}
         title="Delete Payment Option?"
         description="This will permanently remove the payment option."

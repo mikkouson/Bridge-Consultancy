@@ -1,17 +1,17 @@
 "use client";
 
-import { CompanySchemaType } from "@/app/types/companies.type";
-import { CompanyForm } from "@/components/companies/form";
+import { Row } from "@tanstack/react-table";
 import { DeleteConfirmationDialog } from "@/components/delete-dialog";
 import { SheetModal } from "@/components/sheet-modal";
-import { Row } from "@tanstack/react-table";
-import { deleteCompanies } from "../../app/(admin)/companies/actions";
+import { InvoicesForm } from "./form";
+import { deleteInvoice } from "@/app/(admin)/invoices/actions";
+import { InvoicesSchemaType } from "@/app/types/invoices.type";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
-export function DataTableRowActions<TData extends CompanySchemaType>({
+export function DataTableRowActions<TData extends InvoicesSchemaType>({
   row,
 }: DataTableRowActionsProps<TData>) {
   return (
@@ -23,15 +23,15 @@ export function DataTableRowActions<TData extends CompanySchemaType>({
         edit={true}
       >
         {(setOpen) => (
-          <CompanyForm data={row.original} setOpen={setOpen} action="edit" />
+          <InvoicesForm data={row.original} setOpen={setOpen} action="edit" />
         )}
       </SheetModal>
       <DeleteConfirmationDialog
         onConfirm={async () => {
-          await deleteCompanies((row.original as { id: number }).id);
+          await deleteInvoice((row.original as { id: number }).id);
         }}
-        title="Delete Company?"
-        description="This will permanently remove the company."
+        title="Delete Invoice?"
+        description="This will permanently remove the service."
       />
     </div>
   );
