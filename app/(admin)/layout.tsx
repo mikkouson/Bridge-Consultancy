@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import ModeToggle from "@/components/theme";
 // import {
 //   Breadcrumb,
 //   BreadcrumbItem,
@@ -40,6 +41,7 @@ export default async function DashboardLayout({
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb> */}
+            <ModeToggle />
           </header>
           <div className="flex-1 overflow-auto p-4">{children}</div>
         </SidebarInset>

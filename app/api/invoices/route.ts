@@ -6,12 +6,20 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("invoices")
-    .select("*,companies(*)")
-    .is("deleted_at", null);
+    .select(
+      `
+      *,
+      companies(*),
+      invoice_services:invoice_services!inner(*)
+      `
+    )
+    .is("deleted_at", null)
+    .is("invoice_services.deleted_at", null);
 
   if (error) {
     console.error("Supabase error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
   return NextResponse.json(data);
 }

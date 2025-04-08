@@ -1,12 +1,14 @@
+"use client";
+import { useInvoice } from "@/app/hooks/use-invoices";
 import { InvoicesForm } from "@/components/invoices/form";
 import React from "react";
 
-const page = () => {
-  return (
-    <>
-      <InvoicesForm />
-    </>
-  );
+const Page = () => {
+  const { data } = useInvoice();
+
+  if (!data) return <p>Loading...</p>;
+
+  return <InvoicesForm data={data} action="create" />;
 };
 
-export default page;
+export default Page;

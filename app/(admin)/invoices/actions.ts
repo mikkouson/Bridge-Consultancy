@@ -1,6 +1,10 @@
 "use server";
 
-import { InvoicesSchemaType, InvoicesSchema } from "@/app/types/invoices.type";
+import {
+  InvoicesSchemaType,
+  InvoicesSchema,
+  ServiceType,
+} from "@/app/types/invoices.type";
 import { createClient } from "@/utils/supabase/server";
 
 export async function createInvoice(formData: InvoicesSchemaType) {
@@ -12,19 +16,45 @@ export async function createInvoice(formData: InvoicesSchemaType) {
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from("invoices").insert({
-    company: formData.company,
-    invoice_number: formData.invoice_number,
-    date: formData.date,
-    vat: formData.vat,
-    payment_option: formData.payment_option,
-  });
+  // Insert the invoice data
+  const { data: invoiceData, error: invoiceError } = await supabase
+    .from("invoices")
+    .insert({
+      company: formData.company,
+      invoice_number: formData.invoice_number,
+      date: formData.date,
+      payment_option: formData.payment_option,
+    })
+    .select() // Add this to return the inserted data
+    .single();
 
-  if (error) {
-    throw new Error(error.message);
-  } else {
-    return data;
+  if (invoiceError) {
+    throw new Error(invoiceError.message);
   }
+
+  if (!invoiceData) {
+    throw new Error("Failed to create invoice");
+  }
+
+  // Insert the invoice services data using the invoice ID from the previous insert
+  const { data: invoiceServicesData, error: invoiceServicesError } =
+    await supabase.from("invoice_services").insert(
+      formData.services.map((service) => ({
+        invoice_id: invoiceData.id,
+        service_id: service.service_id,
+        service_vat: service.service_vat,
+        service_vat_amount: service.service_vat_amount,
+        service_date: service.service_date,
+        service_name: service.service_name,
+        amount: service.amount,
+      }))
+    );
+
+  if (invoiceServicesError) {
+    throw new Error(invoiceServicesError.message);
+  }
+
+  return { invoiceData, invoiceServicesData };
 }
 
 export async function deleteInvoice(id: number) {
@@ -53,20 +83,123 @@ export async function updateInvoice(formData: InvoicesSchemaType) {
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("services")
+  // Update the invoice data
+  const { data: invoiceData, error: invoiceError } = await supabase
+    .from("invoices")
     .update({
       company: formData.company,
       invoice_number: formData.invoice_number,
       date: formData.date,
-      vat: formData.vat,
       payment_option: formData.payment_option,
     })
-    .eq("id", formData.id);
+    .eq("id", formData.id)
+    .select()
+    .single();
 
-  if (error) {
-    throw new Error(error.message);
-  } else {
-    return data;
+  if (invoiceError) {
+    throw new Error(invoiceError.message);
   }
+
+  if (!invoiceData) {
+    throw new Error("Failed to update invoice");
+  }
+
+  // Fetch existing services for this invoice (that aren't already soft-deleted)
+  const { data: existingServices, error: fetchServicesError } = await supabase
+    .from("invoice_services")
+    .select("*")
+    .eq("invoice_id", formData.id)
+    .is("deleted_at", null);
+
+  if (fetchServicesError) {
+    throw new Error(fetchServicesError.message);
+  }
+
+  // Create maps for easier comparison
+  const existingServicesMap = new Map(
+    existingServices?.map((service) => [service.id, service]) || []
+  );
+
+  // Separate services into new and existing ones
+  const existingServicesToUpdate: ServiceType = [];
+  const newServicesToInsert: ServiceType = [];
+
+  formData.services.forEach((service) => {
+    if (service.id && existingServicesMap.has(service.id)) {
+      // This is an existing service that needs updating
+      existingServicesToUpdate.push({
+        id: service.id,
+        invoice_id: formData.id,
+        service_id: service.service_id,
+        service_vat: service.service_vat,
+        service_vat_amount: service.service_vat_amount,
+        service_date: service.service_date,
+        service_name: service.service_name,
+        amount: service.amount,
+      });
+    } else {
+      // This is a new service that needs to be inserted
+      newServicesToInsert.push({
+        invoice_id: formData.id,
+        service_id: service.service_id,
+        service_vat: service.service_vat,
+        service_vat_amount: service.service_vat_amount,
+        service_date: service.service_date,
+        service_name: service.service_name,
+        amount: service.amount,
+      });
+    }
+  });
+
+  // Find services to soft-delete (exist in database but not in incoming data)
+  const serviceIdsToDelete = Array.from(existingServicesMap.keys()).filter(
+    (existingId) => !formData.services.some((s) => s.id === existingId)
+  );
+
+  // Update existing services
+  let updatedServices = [];
+  if (existingServicesToUpdate.length > 0) {
+    const { data, error: updateError } = await supabase
+      .from("invoice_services")
+      .upsert(existingServicesToUpdate)
+      .select();
+
+    if (updateError) {
+      throw new Error(`Error updating services: ${updateError.message}`);
+    }
+    updatedServices = data || [];
+  }
+
+  // Insert new services
+  let insertedServices = [];
+  if (newServicesToInsert.length > 0) {
+    const { data, error: insertError } = await supabase
+      .from("invoice_services")
+      .insert(newServicesToInsert)
+      .select();
+
+    if (insertError) {
+      throw new Error(`Error inserting new services: ${insertError.message}`);
+    }
+    insertedServices = data || [];
+  }
+
+  // Soft delete services that no longer exist by setting deleted_at
+  if (serviceIdsToDelete.length > 0) {
+    const { error: deleteError } = await supabase
+      .from("invoice_services")
+      .update({ deleted_at: new Date().toISOString() })
+      .in("id", serviceIdsToDelete);
+
+    if (deleteError) {
+      throw new Error(`Error removing services: ${deleteError.message}`);
+    }
+  }
+
+  return {
+    invoiceData,
+    updatedServices,
+    insertedServices,
+    deletedServiceIds: serviceIdsToDelete,
+  };
 }

@@ -1,7 +1,6 @@
 "use client";
 import { InvoicesSchemaType } from "@/app/types/invoices.type";
-import { PdfExport } from "@/components/pdf-export";
-import { SheetModal } from "@/components/sheet-modal";
+// import { PdfExport } from "@/components/pdf-export";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,9 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
-import { ArrowDownToLine, X } from "lucide-react";
+import { ArrowDownToLine, Plus, X } from "lucide-react";
+import Link from "next/link";
 import { CSVLink } from "react-csv";
-import { InvoicesForm } from "./form";
 
 interface DataTableToolbarProps<TData extends object> {
   table: Table<TData>;
@@ -78,24 +77,22 @@ export function DataTableToolbar<TData extends InvoicesSchemaType>({
                   </CSVLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <PdfExport
+                  {/* <PdfExport
                     title="Invoices Report"
                     data={data}
                     fileName="invoices_report.pdf"
-                  />
+                  /> */}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
 
-        <SheetModal
-          triggerLabel="Create Service"
-          title="Create Service"
-          description="Fill in the details to create a new service."
-        >
-          {(setOpen) => <InvoicesForm setOpen={setOpen} action="create" />}
-        </SheetModal>
+        <Button variant="default" size="sm">
+          <Plus />
+
+          <Link href="/invoices/create">Create Invoice</Link>
+        </Button>
       </div>
     </div>
   );
