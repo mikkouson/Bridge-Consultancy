@@ -15,7 +15,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -25,19 +24,19 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 
-export function ComboboxForm({
+export function ComboboxForm<TFieldValues extends FieldValues = FieldValues>({
   data,
   form,
   name,
   formName,
-  title,
 }: {
   data: { id: string; [key: string]: string }[];
-  form: any;
-  name: string;
+  form: UseFormReturn<TFieldValues>;
+  name: Path<TFieldValues>;
+
   formName: string;
-  title?: string;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -58,7 +57,7 @@ export function ComboboxForm({
                   )}
                 >
                   {field.value
-                    ? data.find((data) => data.id === field.value)?.[formName]
+                    ? data?.find((data) => data.id === field.value)?.[formName]
                     : `Select ${formName}`}
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
@@ -79,7 +78,11 @@ export function ComboboxForm({
                           value={data[formName]}
                           key={data.id}
                           onSelect={() => {
-                            form.setValue(name, data.id);
+                            form.setValue(
+                              name,
+                              data.id as PathValue<TFieldValues, typeof name>
+                            );
+
                             setOpen(false);
                           }}
                         >
@@ -99,9 +102,6 @@ export function ComboboxForm({
               </Command>
             </PopoverContent>
           </Popover>
-          {/* <FormDescription>
-                This is the language that will be used in the dashboard.
-              </FormDescription> */}
           <FormMessage />
         </FormItem>
       )}
