@@ -1,10 +1,9 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTableRowActions } from "./data-table-row-actions";
 import { ServicesSchemaType } from "@/app/types/services.type";
+import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../data-table-column-header";
-import { Badge } from "../ui/badge";
+import { DataTableRowActions } from "./data-table-row-actions";
 export const columns: ColumnDef<ServicesSchemaType>[] = [
   {
     accessorKey: "name",

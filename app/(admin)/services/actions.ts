@@ -16,7 +16,6 @@ export async function createService(formData: ServicesSchemaType) {
     name: formData.name,
     description: formData.description,
     amount: formData.amount,
-    vat: formData.vat,
   });
 
   if (error) {
@@ -58,7 +57,6 @@ export async function updateService(formData: ServicesSchemaType) {
       name: formData.name,
       description: formData.description,
       amount: formData.amount,
-      vat: formData.vat,
     })
     .eq("id", formData.id);
 

@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useId } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -27,7 +26,6 @@ export function ServiceForm({
   setOpen: (open: boolean) => void;
   action?: "create" | "edit";
 }) {
-  const id = useId();
   const form = useForm<z.infer<typeof ServicesSchema>>({
     resolver: zodResolver(ServicesSchema),
     defaultValues: {
