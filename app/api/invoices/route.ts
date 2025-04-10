@@ -9,8 +9,11 @@ export async function GET() {
     .select(
       `
       *,
+
       companies(*),
       invoice_services:invoice_services!inner(*)
+      payment_option(*),
+
       `
     )
     .is("deleted_at", null)

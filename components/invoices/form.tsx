@@ -23,7 +23,6 @@ import {
   Calculator,
   CalendarIcon,
   CreditCard,
-  DollarSign,
   FileText,
   Percent,
   Receipt,
@@ -39,7 +38,10 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Separator } from "@radix-ui/react-separator";
+import { useEffect } from "react";
+import useSWR from "swr";
 import { ComboboxForm } from "../popover";
+import { ServiceSheetModal } from "../servicesheet";
 import {
   Card,
   CardContent,
@@ -48,7 +50,6 @@ import {
   CardTitle,
 } from "../ui/card";
 import ServiceSelection from "./service-selection";
-import { ServiceSheetModal } from "../servicesheet";
 
 // Define the interface for invoice service items
 interface InvoiceService {
@@ -74,8 +75,19 @@ export function InvoicesForm({
   data?: InvoiceFormData;
   action?: "create" | "edit";
 }) {
+  const { data: curr, mutate } = useSWR(
+    "https://api.fxratesapi.com/latest?currencies=USD,EUR&base=AED&api_key=fxr_live_8e199f68b4848badf957957345368a4b4e12",
+    (url) => fetch(url).then((res) => res.json())
+  );
+
   const { data: company } = useCompany();
   const { data: payment_option } = usePaymentOptions();
+
+  const currencyData = [
+    { id: "AED", currency: "UAE Dirham (AED)", symbol: "د.إ" },
+    { id: "USD", currency: "US Dollar (USD)", symbol: "$" },
+    { id: "EUR", currency: "Euro (EUR)", symbol: "€" },
+  ];
 
   const form = useForm<InvoicesSchemaType>({
     resolver: zodResolver(InvoicesSchema),
@@ -89,6 +101,8 @@ export function InvoicesForm({
       amount: data?.amount ?? 0,
       total_vat_amount: data?.total_vat_amount ?? 0,
       total_amount: data?.total_amount ?? 0,
+      currency_value: data?.currency_value ?? 1, // Set default value for currency_value if needed
+
       // Map invoice_services to services if it exists
       services: data?.invoice_services?.length
         ? data.invoice_services.map((service: InvoiceService) => ({
@@ -106,6 +120,35 @@ export function InvoicesForm({
         : [],
     },
   });
+
+  const currencyId = form.watch("currency") || "AED"; // Watch the selected currency ID
+  const currentAmount = form.watch("amount"); // Watch the current amount
+  const payment = form.watch("payment_option");
+  const currency = form.watch("currency_value");
+
+  // Helper function to get currency symbol by ID
+  const getCurrencySymbol = (currencyId: string): string => {
+    return currencyData.find((c) => c.id === currencyId)?.symbol || "د.إ";
+  };
+
+  let rate = 1;
+  const findpayment = payment_option?.find(
+    (p: { id: number }) => p?.id === payment
+  )?.currency;
+  useEffect(() => {
+    if (findpayment) {
+      form.setValue("currency", findpayment);
+    }
+    if (currencyId && curr?.rates) {
+      rate = curr.rates[currencyId] ?? 1; // Get conversion rate based on selected currency
+
+      const amount = Number(currentAmount) * Number(rate.toFixed(2));
+
+      form.setValue("currency_value", rate); // Set the currency value outside of render
+
+      form.setValue("amount", Number(amount)); // Set the currency value outside of render
+    }
+  }, [findpayment, curr]); // Depend on currency and exchange rates
 
   async function onSubmit(data: z.infer<typeof InvoicesSchema>) {
     try {
@@ -134,6 +177,7 @@ export function InvoicesForm({
 
   return (
     <div>
+      {findpayment}
       <ServiceSheetModal />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -148,12 +192,12 @@ export function InvoicesForm({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="invoice_number"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="md:col-span-1 lg: col-span-2">
                       <FormLabel className="flex items-center gap-2">
                         <Receipt className="h-4 w-4" />
                         Invoice Number
@@ -165,12 +209,11 @@ export function InvoicesForm({
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col md:col-span-1 lg: col-span-2">
                       <FormLabel className="flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4" />
                         Invoice Date
@@ -208,7 +251,7 @@ export function InvoicesForm({
                   )}
                 />
 
-                <div className="md:col-span-1">
+                <div className="md:col-span-1 lg: col-span-2">
                   <FormLabel className="flex items-center gap-2 mb-2">
                     <Building className="h-4 w-4" />
                     Client Information
@@ -221,7 +264,7 @@ export function InvoicesForm({
                   />
                 </div>
 
-                <div className="md:col-span-1">
+                <div className="md:col-span-1 lg: col-span-2">
                   <FormLabel className="flex items-center gap-2 mb-2">
                     <CreditCard className="h-4 w-4" />
                     Payment Details
@@ -233,6 +276,54 @@ export function InvoicesForm({
                     formName="bank_name"
                   />
                 </div>
+                <div className="md:col-span-1 lg: col-span-2 pointer-events-none opacity-50">
+                  <FormLabel className="flex items-center gap-2 mb-2">
+                    <CreditCard className="h-4 w-4" />
+                    Currency
+                  </FormLabel>
+                  <ComboboxForm
+                    data={currencyData}
+                    form={form}
+                    name="currency"
+                    formName="currency"
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="currency_value"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="md:col-span-1 lg: col-span-2">
+                        <FormLabel className="flex items-center gap-2">
+                          <span> {getCurrencySymbol(currencyId)}</span>
+                          Currency Value
+                        </FormLabel>
+                        <FormControl>
+                          <div className="space-y-2 min-w-[300px]">
+                            <div className="relative">
+                              <Input
+                                className="peer pe-12 ps-6 bg-muted"
+                                placeholder="0.00"
+                                {...field}
+                                type="number"
+                                readOnly
+                                value={field?.value?.toFixed(2)}
+                              />
+                              <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
+                                {getCurrencySymbol(currencyId)}
+                              </span>
+                              <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
+                                {currencyId}
+                              </span>
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
               </div>
             </CardContent>
 
@@ -243,7 +334,10 @@ export function InvoicesForm({
                 render={() => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <DollarSign className="h-5 w-5" />
+                      <span className="text-lg font-semibold">
+                        {" "}
+                        {getCurrencySymbol(currencyId)}
+                      </span>
                       Services & Pricing
                     </FormLabel>
                     <CardDescription>
@@ -273,19 +367,30 @@ export function InvoicesForm({
                         Sub Total
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="0.00"
-                          {...field}
-                          type="number"
-                          readOnly
-                          value={field?.value?.toFixed(2)}
-                          className="font-semibold bg-accent"
-                        />
+                        <div className="space-y-2 min-w-[300px]">
+                          <div className="relative">
+                            <Input
+                              className="peer pe-12 ps-6 bg-muted"
+                              placeholder="0.00"
+                              {...field}
+                              type="number"
+                              readOnly
+                              value={field?.value?.toFixed(2)}
+                            />
+                            <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
+                              {getCurrencySymbol(currencyId)}
+                            </span>
+                            <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
+                              {currencyId}
+                            </span>
+                          </div>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="total_vat_amount"
@@ -296,14 +401,24 @@ export function InvoicesForm({
                         VAT Amount
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="0.00"
-                          {...field}
-                          value={field?.value?.toFixed(2)}
-                          type="number"
-                          readOnly
-                          className="font-semibold bg-accent"
-                        />
+                        <div className="space-y-2 min-w-[300px]">
+                          <div className="relative">
+                            <Input
+                              className="peer pe-12 ps-6 bg-muted"
+                              placeholder="0.00"
+                              {...field}
+                              type="number"
+                              readOnly
+                              value={field?.value?.toFixed(2)}
+                            />
+                            <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
+                              {getCurrencySymbol(currencyId)}
+                            </span>
+                            <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
+                              {currencyId}
+                            </span>
+                          </div>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -331,21 +446,33 @@ export function InvoicesForm({
 
                     const totalAmount = servicesSubTotal + servicesTotalVat;
 
+                    const convertedTotalAmount = totalAmount * currency;
+
                     return (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4" />
+                          <span> {getCurrencySymbol(currencyId)}</span>
                           Total Amount
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Total Amount"
-                            {...field}
-                            type="number"
-                            value={totalAmount.toFixed(2)} // Corrected dynamic total
-                            className="bg-muted"
-                            readOnly
-                          />
+                          <div className="space-y-2 min-w-[300px]">
+                            <div className="relative">
+                              <Input
+                                className="peer pe-12 ps-6 bg-muted"
+                                placeholder="0.00"
+                                {...field}
+                                type="number"
+                                readOnly
+                                value={convertedTotalAmount.toFixed(2)}
+                              />
+                              <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
+                                {getCurrencySymbol(currencyId)}
+                              </span>
+                              <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
+                                {currencyId}
+                              </span>
+                            </div>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -356,11 +483,11 @@ export function InvoicesForm({
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-50 dark:bg-slate-900">
+          <Card className="bg-muted">
             <CardContent className="pt-6">
               <div className="flex justify-between items-center">
                 <div className="text-lg font-semibold flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
+                  <span> {getCurrencySymbol(currencyId)}</span>
                   Total Amount Due
                 </div>
                 <FormField
@@ -384,12 +511,14 @@ export function InvoicesForm({
 
                     const totalAmount = servicesSubTotal + servicesTotalVat;
 
+                    const convertedTotalAmount = totalAmount * currency;
+
                     return (
                       <FormItem>
                         <FormControl>
                           <span>
                             <div className="text-2xl font-bold">
-                              {totalAmount.toFixed(2)}
+                              {convertedTotalAmount.toFixed(2)}
                             </div>
                           </span>
                         </FormControl>

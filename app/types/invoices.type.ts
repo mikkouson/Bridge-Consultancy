@@ -16,6 +16,8 @@ export const InvoicesSchema = z.object({
 
   total_vat_amount: z.number().nonnegative().optional(),
   payment_option: z.number().min(1, { message: "Payment option is required." }),
+  currency: z.string().min(1, { message: "currency is required" }),
+  currency_value: z.number().min(1, { message: "currency is required" }),
   services: z
     .array(
       z.object({

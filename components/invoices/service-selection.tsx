@@ -2,10 +2,10 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
-import { useId, useState } from "react";
+import { useId, useState, useEffect } from "react";
 
 import { useServices } from "@/app/hooks/use-services";
-import { InvoicesSchemaType } from "@/app/types/invoices.type";
+import { InvoicesSchemaType, ServiceType } from "@/app/types/invoices.type";
 import { ServicesSchemaType } from "@/app/types/services.type";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -56,6 +56,33 @@ export default function ServiceSelection({
   const { data: serviceOptions } = useServices();
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const currency = form.watch("currency_value");
+  const services = form.watch("services");
+
+  // Calculate total amount considering currency
+  const calculateTotalAmount = (services: InvoicesSchemaType["services"]) => {
+    const baseTotal = services.reduce((total, service) => {
+      return total + (service.amount || 0);
+    }, 0);
+
+    const currencyValue = Number(currency || 1);
+    return baseTotal * currencyValue;
+  };
+  // Update total when services or currency changes
+  useEffect(() => {
+    if (services && services.length > 0) {
+      const totalAmount = calculateTotalAmount(services);
+      form.setValue("amount", totalAmount);
+
+      // Also update total VAT amount in case currency affects it
+      const totalVat = services.reduce(
+        (total, s) =>
+          total + (s.service_vat_amount || 0) * Number(currency || 1),
+        0
+      );
+      form.setValue("total_vat_amount", totalVat);
+    }
+  }, [services, currency, form]);
 
   const handleClick = () => {
     // Get the current URL
@@ -67,23 +94,23 @@ export default function ServiceSelection({
     // Navigate to the updated URL
     router.push(currentUrl.search);
   };
+
   const removeService = (index: number) => {
     const services = form.getValues().services || [];
     const updatedServices = services.filter((_, i) => i !== index);
     form.setValue("services", updatedServices);
 
-    const totalAmount = updatedServices.reduce((total, service) => {
-      return total + (service.amount || 0);
-    }, 0);
-
-    form.setValue("amount", totalAmount);
+    // Total amount will be updated by the useEffect
   };
+
   const filteredServices = (serviceOptions || []).filter(
     (service: { name: string }) =>
       service.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const selectedCurrency = form.watch("currency");
   return (
-    <div className="w-full  mx-auto p-4">
+    <div className="w-full mx-auto p-4">
       {/* Display services table */}
       <div className="border rounded-md overflow-hidden">
         <Table>
@@ -92,10 +119,9 @@ export default function ServiceSelection({
               <TableHead className="w-[150px]">Service Date</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Vatable</TableHead>
-              <TableHead>Vat Amount</TableHead>
-
+              <TableHead>Vat Amount ({selectedCurrency})</TableHead>
               <TableHead className="text-right w-[150px]">
-                Amount (AED)
+                Amount ({selectedCurrency})
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -201,12 +227,7 @@ export default function ServiceSelection({
 
                                   form.setValue("services", updatedServices);
 
-                                  const totalVat = updatedServices.reduce(
-                                    (total, s) =>
-                                      total + (s.service_vat_amount ?? 0),
-                                    0
-                                  );
-                                  form.setValue("total_vat_amount", totalVat);
+                                  // Total VAT will be updated by useEffect
                                 }}
                                 className="peer data-[state=unchecked]:bg-input/50 absolute inset-0 h-[inherit] w-auto rounded-md [&_span]:z-10 [&_span]:h-full [&_span]:w-1/2 [&_span]:rounded-sm [&_span]:transition-transform [&_span]:duration-300 [&_span]:[transition-timing-function:cubic-bezier(0.16,1,0.3,1)] [&_span]:data-[state=checked]:translate-x-full [&_span]:data-[state=checked]:rtl:-translate-x-full"
                               />
@@ -235,7 +256,7 @@ export default function ServiceSelection({
                       <FormItem className="space-y-0">
                         <FormControl>
                           <Label className="w-full border-0 bg-transparent p-0">
-                            {field.value.toFixed(2)}
+                            {(field.value * Number(currency || 1)).toFixed(2)}
                           </Label>
                         </FormControl>
                         <FormMessage />
@@ -247,16 +268,19 @@ export default function ServiceSelection({
                   <FormField
                     control={form.control}
                     name={`services.${index}.amount`}
-                    render={({ field }) => (
-                      <FormItem className="space-y-0">
-                        <FormControl>
-                          <Label className="w-full border-0 bg-transparent p-0">
-                            {field.value}
-                          </Label>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const currencyValue = Number(currency || 1);
+                      const currency_amount = field.value * currencyValue;
+
+                      return (
+                        <FormItem className="space-y-0">
+                          <div className="flex items-center gap-2">
+                            <span>{Number(currency_amount).toFixed(2)}</span>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
                   <Button
                     type="button"
@@ -270,17 +294,6 @@ export default function ServiceSelection({
                 </TableCell>
               </TableRow>
             ))}
-            <TableRow>
-              <TableCell colSpan={2} className="font-medium">
-                Equivalent:
-              </TableCell>
-              <TableCell className="text-right font-bold">
-                {form
-                  .watch("services")
-                  .reduce((total, service) => total + (service.amount || 0), 0)
-                  .toFixed(2)}
-              </TableCell>
-            </TableRow>
           </TableBody>
         </Table>
       </div>
@@ -324,8 +337,12 @@ export default function ServiceSelection({
                   <TableRow>
                     <TableHead className="w-[10px]"></TableHead>
                     <TableHead>DESCRIPTION</TableHead>
-                    <TableHead className="text-right">VAT AMOUNT</TableHead>
-                    <TableHead className="text-right">AMOUNT (AED)</TableHead>
+                    <TableHead className="text-right">
+                      VAT AMOUNT ({selectedCurrency})
+                    </TableHead>
+                    <TableHead className="text-right">
+                      AMOUNT ({selectedCurrency})
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -358,32 +375,28 @@ export default function ServiceSelection({
                                   },
                                 ];
                                 form.setValue("services", updatedServices);
-                                const updateService = updatedServices.reduce(
-                                  (total, s) => total + (s.amount || 0),
-                                  0
-                                );
-                                form.setValue("amount", updateService);
+                                // Total amount will be updated by useEffect
                               }
                             } else {
                               const updatedServices = services.filter(
                                 (s) => s.service_id !== service.id
                               );
                               form.setValue("services", updatedServices);
-                              const updateService = updatedServices.reduce(
-                                (total, s) => total + (s.amount || 0),
-                                0
-                              );
-                              form.setValue("amount", updateService);
+                              // Total amount will be updated by useEffect
                             }
                           }}
                         />
                       </TableCell>
                       <TableCell>{service.name}</TableCell>
                       <TableCell className="text-right">
-                        {(service.amount * 0.05).toFixed(2)}
+                        {(
+                          service.amount *
+                          0.05 *
+                          Number(currency || 1)
+                        ).toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">
-                        {service.amount.toFixed(2)}
+                        {(service.amount * Number(currency || 1)).toFixed(2)}
                       </TableCell>
                     </TableRow>
                   ))}
