@@ -7,17 +7,60 @@ export const InvoicesSchema = z.object({
   companies: z
     .object({
       name: z.string(),
+      representative: z.string(),
+      email: z.string(),
     })
     .optional(), // mark as optional if not always included
-  invoice_number: z.string().min(1, { message: "Invoice number is required." }),
+  invoice_number: z.string().refine((val) => val.toString().length === 9, {
+    message: "Invoice Number must be exactly 9 digits long.",
+  }),
+  trn: z.number().refine((val) => val.toString().length === 15, {
+    message: "TRN must be exactly 15 digits long.",
+  }),
   date: z.coerce.date(),
-  amount: z.number().nonnegative().optional(),
-  total_amount: z.number().nonnegative().optional(),
-
-  total_vat_amount: z.number().nonnegative().optional(),
   payment_option: z.number().min(1, { message: "Payment option is required." }),
-  currency: z.string().min(1, { message: "currency is required" }),
-  currency_value: z.number().min(1, { message: "currency is required" }),
+  currency: z.string().min(1, { message: "Currency is required" }),
+  subject: z.string().min(1, { message: "Subject is required" }),
+  invoice_type: z.string().min(1, { message: "Invoice Type is required" }),
+  amount: z.number().optional(),
+  total_vat_amount: z.number().optional(),
+  total_amount: z.number().optional(),
+  exchange_rate: z
+    .number()
+    .min(0.01, { message: "Exchange rate must be greater than 0" }),
+
+  payment_options: z
+    .object({
+      account_name: z.string(),
+      currency: z.string(),
+      bank_name: z.string(),
+      iban: z.string(),
+      swift_code: z.string(),
+      bank_address: z.string().optional(),
+    })
+    .optional(),
+
+  invoice_services: z
+    .array(
+      z.object({
+        id: z.number().optional(),
+        service_id: z.number().optional(),
+        invoice_service_id: z.number().optional(),
+        invoice_id: z.number().optional(),
+        service_vat: z.boolean(),
+        service_vat_amount: z.number(),
+        service_date: z.coerce.date(),
+        service_name: z.string(),
+        amount: z.number().optional(),
+        service_deleted_at: z.coerce.date().optional(),
+        currency: z.string().optional(),
+        exchange_rate: z.number().optional(),
+        base_amount: z.number().optional(),
+        deleted_at: z.date().optional(),
+      })
+    )
+    .optional(),
+
   services: z
     .array(
       z.object({
@@ -29,8 +72,12 @@ export const InvoicesSchema = z.object({
         service_vat_amount: z.number(),
         service_date: z.coerce.date(),
         service_name: z.string(),
-        amount: z.number().nonnegative(),
+        amount: z.number().optional(),
         service_deleted_at: z.coerce.date().optional(),
+        currency: z.string().optional(),
+        exchange_rate: z.number().optional(),
+        base_amount: z.number().optional(),
+        deleted_at: z.date().optional(),
       })
     )
     .min(1, { message: "At least one service is required." }),
