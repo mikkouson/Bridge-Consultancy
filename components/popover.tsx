@@ -31,12 +31,13 @@ export function ComboboxForm<TFieldValues extends FieldValues = FieldValues>({
   form,
   name,
   formName,
+  onValueChange,
 }: {
   data: { id: string; [key: string]: string }[];
   form: UseFormReturn<TFieldValues>;
   name: Path<TFieldValues>;
-
   formName: string;
+  onValueChange?: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -65,38 +66,36 @@ export function ComboboxForm<TFieldValues extends FieldValues = FieldValues>({
             </PopoverTrigger>
             <PopoverContent className="popover-content-width-same-as-its-trigger p-0">
               <Command className="w-full">
-                <CommandInput
-                  placeholder="Search framework..."
-                  className="h-9 w-full"
-                />
+                <CommandInput placeholder="Search..." className="h-9 w-full" />
                 <CommandList>
-                  <CommandEmpty>No framework found.</CommandEmpty>
+                  <CommandEmpty>No option found.</CommandEmpty>
                   <CommandGroup>
-                    {data &&
-                      data.map((data) => (
-                        <CommandItem
-                          value={data[formName]}
-                          key={data.id}
-                          onSelect={() => {
-                            form.setValue(
-                              name,
-                              data.id as PathValue<TFieldValues, typeof name>
-                            );
-
-                            setOpen(false);
-                          }}
-                        >
-                          {data[formName]}
-                          <Check
-                            className={cn(
-                              "ml-auto",
-                              data.id === field.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
+                    {data?.map((data) => (
+                      <CommandItem
+                        value={data[formName]}
+                        key={data.id}
+                        onSelect={() => {
+                          form.setValue(
+                            name,
+                            data.id as PathValue<TFieldValues, typeof name>
+                          );
+                          if (onValueChange) {
+                            onValueChange(data.id);
+                          }
+                          setOpen(false);
+                        }}
+                      >
+                        {data[formName]}
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            data.id === field.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
                   </CommandGroup>
                 </CommandList>
               </Command>

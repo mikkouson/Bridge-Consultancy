@@ -1,21 +1,17 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
-import { FilePenLine, Plus } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ServiceForm } from "./services/form"; // Import the form or any default content you want to show
 
 interface SheetModalProps {
   triggerLabel?: string;
-  triggerIcon?: React.ComponentType;
   title?: string;
   description?: string;
   edit?: boolean;
@@ -23,11 +19,8 @@ interface SheetModalProps {
 }
 
 export function ServiceSheetModal({
-  triggerLabel = "Open",
-  triggerIcon: Icon = Plus,
   title = "Title",
   description = "Description",
-  edit = false,
   paramKey = "sheet",
 }: SheetModalProps) {
   const searchParams = useSearchParams();
