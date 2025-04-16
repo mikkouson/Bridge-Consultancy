@@ -22,6 +22,7 @@ import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ComboboxForm } from "../popover";
 export function PaymentOptionsForm({
   data = {},
   setOpen,
@@ -40,6 +41,7 @@ export function PaymentOptionsForm({
       iban: data.iban ?? "",
       swift_code: data.swift_code ?? "",
       bank_address: data.bank_address ?? "",
+      currency: data.currency ?? "",
     },
   });
   const { isSubmitting } = form.formState;
@@ -65,6 +67,11 @@ export function PaymentOptionsForm({
       });
     }
   }
+  const currencyData = [
+    { id: "AED", currency: "UAE Dirham (AED)", symbol: "د.إ" },
+    { id: "USD", currency: "US Dollar (USD)", symbol: "$" },
+    { id: "EUR", currency: "Euro (EUR)", symbol: "€" },
+  ];
 
   return (
     <Form {...form}>
@@ -137,7 +144,17 @@ export function PaymentOptionsForm({
             </FormItem>
           )}
         />
-
+        <div className="">
+          <FormLabel className="flex items-center gap-2 mb-2">
+            Currency
+          </FormLabel>
+          <ComboboxForm
+            data={currencyData}
+            form={form}
+            name="currency"
+            formName="currency"
+          />
+        </div>
         <Button type="submit">
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>

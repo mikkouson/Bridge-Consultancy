@@ -66,9 +66,23 @@ export const columns: ColumnDef<PaymentOptionsSchemaType>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Bank Address" />
     ),
+    cell: ({ row }) => {
+      const value = row.getValue("bank_address") as string;
+      return (
+        <div className="w-[120px] truncate font-medium">{value || "N/A"}</div>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "currency",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Currency" />
+    ),
     cell: ({ row }) => (
       <div className="w-[120px] truncate font-medium">
-        {row.getValue("bank_address")}
+        {row.getValue("currency")}
       </div>
     ),
     enableSorting: false,

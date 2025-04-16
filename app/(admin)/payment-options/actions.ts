@@ -21,6 +21,7 @@ export async function createPaymentOption(formData: PaymentOptionsSchemaType) {
     iban: formData.iban,
     swift_code: formData.swift_code,
     bank_address: formData.bank_address,
+    currency: formData.currency,
   });
 
   if (error) {
@@ -64,6 +65,7 @@ export async function updatePaymentOption(formData: PaymentOptionsSchemaType) {
       iban: formData.iban,
       swift_code: formData.swift_code,
       bank_address: formData.bank_address,
+      currency: formData.currency,
     })
     .eq("id", formData.id);
 
