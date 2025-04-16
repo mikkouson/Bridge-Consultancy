@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
   },
   underline: {
     textDecoration: "underline",
+    textDecorationOffset: 10, // Adds space between text and underline
   },
 });
 
@@ -231,11 +232,8 @@ export function InvoiceDocument({
   const rowsNeeded = 11 - totalServices - 1;
 
   // Get company info with fallbacks
-  const companyName = invoiceData.companies?.name || "Company Name";
 
-  const companyRepresentative =
-    invoiceData.companies?.representative || "Company Representative"; // Replace with actual data if available
-  const companyEmail = invoiceData.companies?.email || "company@example.com"; // Replace with actual data if available
+  const companyEmail = invoiceData.companies?.email;
 
   return (
     <Document>
@@ -248,16 +246,26 @@ export function InvoiceDocument({
 
         {/* Client Info and Invoice Details */}
         <View style={styles.infoSection}>
-          <View style={styles.leftColumn}>
-            <View style={styles.row}>
-              <Text style={styles.label1}>To:</Text>
-              <Text>{companyName}</Text>
+          {invoiceData.companies?.company_name ? (
+            <View style={styles.leftColumn}>
+              <View style={styles.row}>
+                <Text style={styles.label1}>To:</Text>
+                <Text>{invoiceData.companies?.company_name}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label1}></Text>
+                <Text>{invoiceData.companies?.name}</Text>
+              </View>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label1}></Text>
-              <Text>{companyRepresentative}</Text>
+          ) : (
+            <View style={styles.leftColumn}>
+              <View style={styles.row}>
+                <Text style={styles.label1}>To:</Text>
+                <Text>{invoiceData?.companies?.name}</Text>
+              </View>
             </View>
-          </View>
+          )}
+
           <View style={styles.rightColumn}>
             <View style={styles.trnrow}>
               <Text>TRN # {invoiceData.trn}</Text>

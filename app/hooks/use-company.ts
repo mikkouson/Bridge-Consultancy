@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import useSWR from "swr";
 import { createClient } from "@/utils/supabase/client";
-export function useCompany() {
+export function useCustomer() {
   const { data, mutate } = useSWR("/api/companies", (url) =>
     fetch(url).then((res) => res.json())
   );

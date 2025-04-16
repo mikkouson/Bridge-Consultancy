@@ -1,6 +1,5 @@
 "use client";
-import { CompanySchemaType } from "@/app/types/companies.type";
-import { CompanyForm } from "@/components/companies/form";
+import { CustomerSchemaType } from "@/app/types/companies.type";
 import { PdfExport } from "@/components/pdf-export";
 import { SheetModal } from "@/components/sheet-modal";
 import { Button } from "@/components/ui/button";
@@ -17,13 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
 import { ArrowDownToLine, X } from "lucide-react";
 import { CSVLink } from "react-csv";
+import { CustomerForm } from "./form";
 
 interface DataTableToolbarProps<TData extends object> {
   table: Table<TData>;
   data: TData[];
 }
 
-export function DataTableToolbar<TData extends CompanySchemaType>({
+export function DataTableToolbar<TData extends CustomerSchemaType>({
   table,
   data,
 }: DataTableToolbarProps<TData>) {
@@ -71,7 +71,7 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
                 <DropdownMenuItem disabled={data.length === 0}>
                   <CSVLink
                     data={data}
-                    filename="companies.csv"
+                    filename="customers.csv"
                     className="w-full"
                   >
                     CSV
@@ -79,9 +79,9 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled={data.length === 0}>
                   <PdfExport
-                    title="Company Report"
+                    title="Customers Report"
                     data={data}
-                    fileName="company_report.pdf"
+                    fileName="customers_report.pdf"
                   />
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -89,11 +89,11 @@ export function DataTableToolbar<TData extends CompanySchemaType>({
           </DropdownMenu>
         )}
         <SheetModal
-          triggerLabel="Create Company"
-          title="Create Company"
-          description="Fill in the details to create a new company."
+          triggerLabel="Create Customer"
+          title="Create Customer"
+          description="Fill in the details to create a new customer."
         >
-          {(setOpen) => <CompanyForm setOpen={setOpen} action="create" />}
+          {(setOpen) => <CustomerForm setOpen={setOpen} action="create" />}
         </SheetModal>
       </div>
     </div>

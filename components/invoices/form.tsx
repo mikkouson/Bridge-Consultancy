@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 
 import { createInvoice, updateInvoice } from "@/app/(admin)/invoices/actions";
-import { useCompany } from "@/app/hooks/use-company";
+import { useCustomer } from "@/app/hooks/use-company";
 import { usePaymentOptions } from "@/app/hooks/use-payment-options";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -69,7 +69,7 @@ export function InvoicesForm({
     (url) => fetch(url).then((res) => res.json())
   );
 
-  const { data: company } = useCompany();
+  const { data: company } = useCustomer();
   const { data: payment_option } = usePaymentOptions();
   const router = useRouter();
   const currencyData = [

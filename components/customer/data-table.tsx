@@ -25,7 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { CompanySchemaType } from "@/app/types/companies.type";
+import { CustomerSchemaType } from "@/app/types/companies.type";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTablePagination } from "../data-table-pagination";
 
@@ -34,7 +34,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function DataTable<TData extends CompanySchemaType, TValue>({
+export function DataTable<TData extends CustomerSchemaType, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {

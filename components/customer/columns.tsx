@@ -2,13 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { CompanySchemaType } from "@/app/types/companies.type";
+import { CustomerSchemaType } from "@/app/types/companies.type";
 import { DataTableColumnHeader } from "../data-table-column-header";
-export const columns: ColumnDef<CompanySchemaType>[] = [
+export const columns: ColumnDef<CustomerSchemaType>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Customer Name" />
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
@@ -23,18 +23,22 @@ export const columns: ColumnDef<CompanySchemaType>[] = [
     },
   },
   {
-    accessorKey: "representative",
+    accessorKey: "company_name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Representative" />
+      <DataTableColumnHeader column={column} title="Company Name" />
     ),
-    cell: ({ row }) => (
-      <div className="w-[150px] truncate font-medium">
-        {row.getValue("representative")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const value = row.getValue("company_name") as string;
+      return (
+        <div className="w-[150px] truncate font-medium">
+          {value?.trim() ? value : "—"}
+        </div>
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   },
+
   {
     accessorKey: "email",
     header: ({ column }) => (

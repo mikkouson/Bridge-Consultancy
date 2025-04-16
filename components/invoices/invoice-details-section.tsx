@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { format } from "date-fns";
 import type { UseFormReturn } from "react-hook-form";
 import type { InvoicesSchemaType } from "@/app/types/invoices.type";
-import { useCompany } from "@/app/hooks/use-company";
+import { useCustomer } from "@/app/hooks/use-company";
 import { usePaymentOptions } from "@/app/hooks/use-payment-options";
 import {
   Building,
@@ -43,7 +43,7 @@ interface InvoiceDetailsSectionProps {
 }
 
 export function InvoiceDetailsSection({ form }: InvoiceDetailsSectionProps) {
-  const { data: company } = useCompany();
+  const { data: company } = useCustomer();
   const { data: payment_option } = usePaymentOptions();
 
   const currencyData = [

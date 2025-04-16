@@ -4,8 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { createNewCompany } from "@/app/(admin)/companies/actions";
-import { CompanySchema } from "@/app/types/companies.type";
+import {
+  createNewCustomer,
+  updateCustomer,
+} from "@/app/(admin)/customers/actions";
+import { CustomerSchema, CustomerSchemaType } from "@/app/types/companies.type";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,35 +20,42 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { Separator } from "../ui/separator";
 
-export function InputForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-  const form = useForm<z.infer<typeof CompanySchema>>({
-    resolver: zodResolver(CompanySchema),
+export function CustomerForm({
+  data = {},
+  setOpen,
+  action,
+}: {
+  data?: Partial<CustomerSchemaType>;
+  setOpen: (open: boolean) => void;
+  action?: "create" | "edit";
+}) {
+  const form = useForm<z.infer<typeof CustomerSchema>>({
+    resolver: zodResolver(CustomerSchema),
     defaultValues: {
-      name: "",
-      representative: "",
-      email: "",
-      contact: "",
+      id: data?.id ?? 0,
+      name: data?.name ?? "",
+      company_name: data?.company_name ?? "",
+      email: data?.email ?? "",
+      contact: data?.contact ?? "",
     },
   });
+  const { isSubmitting } = form.formState;
 
-  async function onSubmit(data: z.infer<typeof CompanySchema>) {
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // });
+  async function onSubmit(data: z.infer<typeof CustomerSchema>) {
     try {
-      await createNewCompany(data);
+      if (action === "edit") {
+        await updateCustomer(data);
+      } else {
+        await createNewCustomer(data);
+      }
+
       toast({
         title: "Success",
         description: "Company created successfully",
       });
       setOpen(false);
-      form.reset();
     } catch (error) {
       toast({
         title: "Error",
@@ -63,28 +73,27 @@ export function InputForm({ setOpen }: { setOpen: (open: boolean) => void }) {
       >
         <FormField
           control={form.control}
-          name="name"
+          name="id"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Company Name</FormLabel>
+            <FormItem className="hidden">
+              <FormLabel>Customer Id</FormLabel>
               <FormControl>
-                <Input placeholder="Company Name" {...field} />
+                <Input placeholder="Customer Name" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
-          name="representative"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Representative</FormLabel>
+              <FormLabel>Customer Name</FormLabel>
               <FormControl>
-                <Input placeholder="Representative" {...field} />
+                <Input placeholder="Customer Name" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -117,7 +126,28 @@ export function InputForm({ setOpen }: { setOpen: (open: boolean) => void }) {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Separator className="my-2" />
+
+        <FormField
+          control={form.control}
+          name="company_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Company Name{" "}
+                <span className=" text-muted-foreground">(Optional)</span>
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Company Name" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </Button>
       </form>
     </Form>
   );

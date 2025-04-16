@@ -1,10 +1,10 @@
 "use server";
 
-import { CompanySchema, CompanySchemaType } from "@/app/types/companies.type";
+import { CustomerSchema, CustomerSchemaType } from "@/app/types/companies.type";
 import { createClient } from "@/utils/supabase/server";
 
-export async function createNewCompany(formData: CompanySchemaType) {
-  const result = CompanySchema.safeParse(formData);
+export async function createNewCustomer(formData: CustomerSchemaType) {
+  const result = CustomerSchema.safeParse(formData);
 
   if (!result.success) {
     throw new Error("Invalid form data");
@@ -14,7 +14,7 @@ export async function createNewCompany(formData: CompanySchemaType) {
 
   const { data, error } = await supabase.from("companies").insert({
     name: formData.name,
-    representative: formData.representative,
+    company_name: formData.company_name,
     email: formData.email,
     contact: formData.contact,
   });
@@ -26,7 +26,7 @@ export async function createNewCompany(formData: CompanySchemaType) {
   }
 }
 
-export async function deleteCompanies(id: number) {
+export async function deleteCustomer(id: number) {
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -43,10 +43,10 @@ export async function deleteCompanies(id: number) {
   }
 }
 
-export async function updateCompany(
-  formData: CompanySchemaType
+export async function updateCustomer(
+  formData: CustomerSchemaType
 ): Promise<void> {
-  const result = CompanySchema.safeParse(formData);
+  const result = CustomerSchema.safeParse(formData);
 
   if (!result.success) {
     throw new Error("Invalid form data");
@@ -58,7 +58,7 @@ export async function updateCompany(
     .from("companies")
     .update({
       name: formData.name,
-      representative: formData.representative,
+      company_name: formData.company_name,
       email: formData.email,
       contact: formData.contact,
     })

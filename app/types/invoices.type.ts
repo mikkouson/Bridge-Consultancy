@@ -7,7 +7,7 @@ export const InvoicesSchema = z.object({
   companies: z
     .object({
       name: z.string(),
-      representative: z.string(),
+      company_name: z.string(),
       email: z.string(),
     })
     .optional(), // mark as optional if not always included
