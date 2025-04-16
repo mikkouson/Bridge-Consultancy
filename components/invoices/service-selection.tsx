@@ -2,10 +2,9 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
-import { useId, useState, useEffect } from "react";
-
+import { useEffect, useId, useState } from "react";
 import { useServices } from "@/app/hooks/use-services";
-import { InvoicesSchemaType, ServiceType } from "@/app/types/invoices.type";
+import { InvoicesSchemaType } from "@/app/types/invoices.type";
 import { ServicesSchemaType } from "@/app/types/services.type";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -39,68 +38,49 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { UseFormReturn } from "react-hook-form";
-import { Label } from "../ui/label";
-import { Switch } from "../ui/switch";
-import { Input } from "../ui/input";
 import { useRouter } from "next/navigation";
+import { UseFormReturn } from "react-hook-form";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import { Switch } from "../ui/switch";
+
 export default function ServiceSelection({
   form,
 }: {
   form: UseFormReturn<InvoicesSchemaType>;
 }) {
   const id = useId();
-
   const [open, setOpen] = useState(false);
   const { data: serviceOptions } = useServices();
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
-  const currency = form.watch("currency_value");
-  const services = form.watch("services");
+  const currr = form.watch("exchange_rate");
+  const selectedCurrency = form.watch("currency");
+  const currency = Number(currr.toFixed(2));
+  const services = form.watch("services") || [];
 
-  // Calculate total amount considering currency
-  const calculateTotalAmount = (services: InvoicesSchemaType["services"]) => {
-    const baseTotal = services.reduce((total, service) => {
-      return total + (service.amount || 0);
-    }, 0);
-
-    const currencyValue = Number(currency || 1);
-    return baseTotal * currencyValue;
-  };
   // Update total when services or currency changes
   useEffect(() => {
     if (services && services.length > 0) {
-      const totalAmount = calculateTotalAmount(services);
-      form.setValue("amount", totalAmount);
-
-      // Also update total VAT amount in case currency affects it
-      const totalVat = services.reduce(
-        (total, s) =>
-          total + (s.service_vat_amount || 0) * Number(currency || 1),
-        0
-      );
-      form.setValue("total_vat_amount", totalVat);
+      services.map((service, index) => {
+        const isVatOn = service.service_vat;
+        const amount = service.amount || 0;
+        const vatAmount = isVatOn ? amount * currency * 0.05 : 0;
+        // Update the field for each service
+        form.setValue(`services.${index}.service_vat_amount`, vatAmount);
+        return service;
+      });
     }
   }, [services, currency, form]);
 
   const handleClick = () => {
     // Get the current URL
     const currentUrl = new URL(window.location.href);
-
     // Set or update the 'sheet' parameter
     currentUrl.searchParams.set("sheet", "open");
-
     // Navigate to the updated URL
     router.push(currentUrl.search);
-  };
-
-  const removeService = (index: number) => {
-    const services = form.getValues().services || [];
-    const updatedServices = services.filter((_, i) => i !== index);
-    form.setValue("services", updatedServices);
-
-    // Total amount will be updated by the useEffect
   };
 
   const filteredServices = (serviceOptions || []).filter(
@@ -108,10 +88,8 @@ export default function ServiceSelection({
       service.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const selectedCurrency = form.watch("currency");
   return (
     <div className="w-full mx-auto p-4">
-      {/* Display services table */}
       <div className="border rounded-md overflow-hidden">
         <Table>
           <TableHeader className="bg-muted">
@@ -126,8 +104,8 @@ export default function ServiceSelection({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {form.watch("services").map((service, index) => (
-              <TableRow key={index}>
+            {services.map((service, index: number) => (
+              <TableRow key={service.service_id}>
                 <TableCell>
                   <FormField
                     control={form.control}
@@ -183,7 +161,6 @@ export default function ServiceSelection({
                     )}
                   />
                 </TableCell>
-
                 <TableCell>
                   <FormField
                     control={form.control}
@@ -199,19 +176,21 @@ export default function ServiceSelection({
                                 checked={field.value}
                                 onCheckedChange={(checked) => {
                                   field.onChange(checked);
-
+                                  const exchange_rate =
+                                    form.getValues("exchange_rate");
                                   const currentService = form.getValues(
                                     `services.${index}`
                                   );
+                                  const convert =
+                                    Number(exchange_rate.toFixed(2)) *
+                                    (currentService.amount ?? 0);
                                   const updatedVatAmount = checked
-                                    ? (currentService.amount ?? 0) * 0.05
+                                    ? (convert ?? 0) * 0.05
                                     : 0;
-
                                   form.setValue(
                                     `services.${index}.service_vat_amount`,
                                     updatedVatAmount
                                   );
-
                                   const updatedServices = form
                                     .getValues("services")
                                     .map((s, i) =>
@@ -224,10 +203,7 @@ export default function ServiceSelection({
                                           }
                                         : s
                                     );
-
                                   form.setValue("services", updatedServices);
-
-                                  // Total VAT will be updated by useEffect
                                 }}
                                 className="peer data-[state=unchecked]:bg-input/50 absolute inset-0 h-[inherit] w-auto rounded-md [&_span]:z-10 [&_span]:h-full [&_span]:w-1/2 [&_span]:rounded-sm [&_span]:transition-transform [&_span]:duration-300 [&_span]:[transition-timing-function:cubic-bezier(0.16,1,0.3,1)] [&_span]:data-[state=checked]:translate-x-full [&_span]:data-[state=checked]:rtl:-translate-x-full"
                               />
@@ -248,7 +224,7 @@ export default function ServiceSelection({
                     )}
                   />
                 </TableCell>
-                <TableCell className="text-left ">
+                <TableCell className="text-left">
                   <FormField
                     control={form.control}
                     name={`services.${index}.service_vat_amount`}
@@ -256,7 +232,9 @@ export default function ServiceSelection({
                       <FormItem className="space-y-0">
                         <FormControl>
                           <Label className="w-full border-0 bg-transparent p-0">
-                            {(field.value * Number(currency || 1)).toFixed(2)}
+                            {typeof field.value === "number"
+                              ? field.value.toFixed(2)
+                              : "0.00"}
                           </Label>
                         </FormControl>
                         <FormMessage />
@@ -270,8 +248,8 @@ export default function ServiceSelection({
                     name={`services.${index}.amount`}
                     render={({ field }) => {
                       const currencyValue = Number(currency || 1);
-                      const currency_amount = field.value * currencyValue;
-
+                      const currency_amount =
+                        (field.value ?? 0) * currencyValue;
                       return (
                         <FormItem className="space-y-0">
                           <div className="flex items-center gap-2">
@@ -282,22 +260,23 @@ export default function ServiceSelection({
                       );
                     }}
                   />
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={() => removeService(index)}
+                    onClick={() => {
+                      const updated = [...services];
+                      updated.splice(index, 1);
+                      form.setValue("services", updated);
+                    }}
+                    className="text-red-500 hover:underline"
                   >
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
-
       <div className="flex justify-between">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
@@ -306,8 +285,7 @@ export default function ServiceSelection({
               variant="outline"
               className="mt-4 w-full border border-dashed border-gray-500"
             >
-              <Plus />
-              Add Service
+              <Plus /> Add Service
             </Button>
           </SheetTrigger>
           <SheetContent className="sm:max-w-md overflow-auto">
@@ -317,7 +295,6 @@ export default function ServiceSelection({
                 Choose from the available services below.
               </SheetDescription>
             </SheetHeader>
-
             <div className="py-4">
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-5">
                 <Input
@@ -331,7 +308,6 @@ export default function ServiceSelection({
                 </Button>
               </div>
               <Separator className="my-4" />
-
               <Table>
                 <TableHeader className="bg-muted">
                   <TableRow>
@@ -356,7 +332,6 @@ export default function ServiceSelection({
                             .some((s) => s.service_id === service.id)}
                           onCheckedChange={(checked) => {
                             const services = form.getValues().services || [];
-
                             if (checked) {
                               if (
                                 !services.some(
@@ -382,7 +357,6 @@ export default function ServiceSelection({
                                 (s) => s.service_id !== service.id
                               );
                               form.setValue("services", updatedServices);
-                              // Total amount will be updated by useEffect
                             }
                           }}
                         />
@@ -403,7 +377,6 @@ export default function ServiceSelection({
                 </TableBody>
               </Table>
             </div>
-
             <SheetFooter>
               <Button onClick={() => setOpen(false)}>Done</Button>
             </SheetFooter>

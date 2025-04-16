@@ -1,8 +1,8 @@
 "use server";
 
 import {
-  InvoicesSchemaType,
   InvoicesSchema,
+  InvoicesSchemaType,
   ServiceType,
 } from "@/app/types/invoices.type";
 import { createClient } from "@/utils/supabase/server";
@@ -24,6 +24,11 @@ export async function createInvoice(formData: InvoicesSchemaType) {
       invoice_number: formData.invoice_number,
       date: formData.date,
       payment_option: formData.payment_option,
+      currency: formData.currency,
+      invoice_type: formData.invoice_type,
+      trn: formData.trn,
+      exchange_rate: formData.exchange_rate.toFixed(2),
+      subject: formData.subject,
     })
     .select() // Add this to return the inserted data
     .single();
@@ -46,7 +51,9 @@ export async function createInvoice(formData: InvoicesSchemaType) {
         service_vat_amount: service.service_vat_amount,
         service_date: service.service_date,
         service_name: service.service_name,
-        amount: service.amount,
+        base_amount: service.amount,
+        exchange_rate: formData.exchange_rate.toFixed(2),
+        currency: formData.currency,
       }))
     );
 
@@ -91,6 +98,11 @@ export async function updateInvoice(formData: InvoicesSchemaType) {
       invoice_number: formData.invoice_number,
       date: formData.date,
       payment_option: formData.payment_option,
+      currency: formData.currency,
+      exchange_rate: formData.exchange_rate.toFixed(2),
+      subject: formData.subject,
+      invoice_type: formData.invoice_type,
+      trn: formData.trn,
     })
     .eq("id", formData.id)
     .select()
@@ -135,7 +147,10 @@ export async function updateInvoice(formData: InvoicesSchemaType) {
         service_vat_amount: service.service_vat_amount,
         service_date: service.service_date,
         service_name: service.service_name,
-        amount: service.amount,
+        base_amount: service.amount,
+        exchange_rate: parseFloat(formData.exchange_rate.toFixed(2)),
+
+        currency: formData.currency,
       });
     } else {
       // This is a new service that needs to be inserted
@@ -146,7 +161,9 @@ export async function updateInvoice(formData: InvoicesSchemaType) {
         service_vat_amount: service.service_vat_amount,
         service_date: service.service_date,
         service_name: service.service_name,
-        amount: service.amount,
+        base_amount: service.amount,
+        exchange_rate: parseFloat(formData.exchange_rate.toFixed(2)),
+        currency: formData.currency,
       });
     }
   });

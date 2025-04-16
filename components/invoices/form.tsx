@@ -1,6 +1,5 @@
 "use client";
 
-import { createInvoice, updateInvoice } from "@/app/(admin)/invoices/actions";
 import { InvoicesSchema, InvoicesSchemaType } from "@/app/types/invoices.type";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,12 +21,16 @@ import {
   Building,
   Calculator,
   CalendarIcon,
+  CheckCircle,
+  CircleAlert,
   CreditCard,
   FileText,
+  Loader2,
   Percent,
   Receipt,
 } from "lucide-react";
 
+import { createInvoice, updateInvoice } from "@/app/(admin)/invoices/actions";
 import { useCompany } from "@/app/hooks/use-company";
 import { usePaymentOptions } from "@/app/hooks/use-payment-options";
 import { Calendar } from "@/components/ui/calendar";
@@ -38,6 +41,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Separator } from "@radix-ui/react-separator";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
 import { ComboboxForm } from "../popover";
@@ -52,27 +56,12 @@ import {
 import ServiceSelection from "./service-selection";
 
 // Define the interface for invoice service items
-interface InvoiceService {
-  id: number;
-  amount: number;
-  service_id: number;
-  service_vat: boolean;
-  service_date: string | Date | undefined;
-  service_name: string;
-  service_vat_amount: number;
-  deleted_at?: Date | null;
-}
-
-// Extend the InvoicesSchemaType for the form data
-interface InvoiceFormData extends Partial<InvoicesSchemaType> {
-  invoice_services?: InvoiceService[];
-}
 
 export function InvoicesForm({
-  data = {},
+  data,
   action,
 }: {
-  data?: InvoiceFormData;
+  data?: InvoicesSchemaType;
   action?: "create" | "edit";
 }) {
   const { data: curr, mutate } = useSWR(
@@ -82,11 +71,17 @@ export function InvoicesForm({
 
   const { data: company } = useCompany();
   const { data: payment_option } = usePaymentOptions();
-
+  const router = useRouter();
   const currencyData = [
     { id: "AED", currency: "UAE Dirham (AED)", symbol: "د.إ" },
     { id: "USD", currency: "US Dollar (USD)", symbol: "$" },
     { id: "EUR", currency: "Euro (EUR)", symbol: "€" },
+  ];
+
+  const invoice_type = [
+    { id: "INVOICE", name: "INVOICE" },
+    { id: "TAX INVOICE", name: "TAX INVOICE" },
+    { id: "PROFORMA INVOICE", name: "PROFORMA INVOICE" },
   ];
 
   const form = useForm<InvoicesSchemaType>({
@@ -98,16 +93,17 @@ export function InvoicesForm({
       invoice_number: data?.invoice_number ?? "",
       date: data?.date ? new Date(data.date) : undefined,
       payment_option: data?.payment_option ?? undefined,
-      amount: data?.amount ?? 0,
-      total_vat_amount: data?.total_vat_amount ?? 0,
-      total_amount: data?.total_amount ?? 0,
-      currency_value: data?.currency_value ?? 1, // Set default value for currency_value if needed
+      exchange_rate: data?.exchange_rate ?? 1, // Set default value for exchange_rate if needed
+      subject: data?.subject ?? "",
+      invoice_type: data?.invoice_type ?? "",
+      trn: data?.trn ?? 0,
+      currency: data?.currency ?? "AED",
 
       // Map invoice_services to services if it exists
       services: data?.invoice_services?.length
-        ? data.invoice_services.map((service: InvoiceService) => ({
+        ? data.invoice_services.map((service) => ({
             id: service.id,
-            amount: service.amount,
+            amount: service.base_amount,
             service_id: service.service_id,
             service_vat: service.service_vat,
             service_date: service.service_date
@@ -122,33 +118,43 @@ export function InvoicesForm({
   });
 
   const currencyId = form.watch("currency") || "AED"; // Watch the selected currency ID
-  const currentAmount = form.watch("amount"); // Watch the current amount
   const payment = form.watch("payment_option");
-  const currency = form.watch("currency_value");
-
+  const currency = form.watch("exchange_rate");
+  const services = form.getValues().services || [];
   // Helper function to get currency symbol by ID
   const getCurrencySymbol = (currencyId: string): string => {
     return currencyData.find((c) => c.id === currencyId)?.symbol || "د.إ";
   };
 
-  let rate = 1;
   const findpayment = payment_option?.find(
     (p: { id: number }) => p?.id === payment
   )?.currency;
+
   useEffect(() => {
     if (findpayment) {
-      form.setValue("currency", findpayment);
+      form.setValue("currency", findpayment, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     }
+  }, [findpayment, form]);
+
+  // Separate effect to handle exchange rate calculations
+  useEffect(() => {
     if (currencyId && curr?.rates) {
-      rate = curr.rates[currencyId] ?? 1; // Get conversion rate based on selected currency
+      // Get conversion rate based on selected currency
+      const newRate = curr.rates[currencyId] ?? 1;
+      form.setValue("exchange_rate", Number(newRate));
 
-      const amount = Number(currentAmount) * Number(rate.toFixed(2));
-
-      form.setValue("currency_value", rate); // Set the currency value outside of render
-
-      form.setValue("amount", Number(amount)); // Set the currency value outside of render
+      // Only update if the rate has actually changed to prevent loops
+      if (newRate !== form.getValues("exchange_rate")) {
+        form.setValue("exchange_rate", Number(newRate), {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
     }
-  }, [findpayment, curr]); // Depend on currency and exchange rates
+  }, [curr, currencyId, form]);
 
   async function onSubmit(data: z.infer<typeof InvoicesSchema>) {
     try {
@@ -157,27 +163,56 @@ export function InvoicesForm({
       } else {
         await createInvoice(data);
       }
-
       toast({
-        title: "Success",
+        variant: "success",
+        className: " border-0",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 " />
+            <span>Completed successfully!</span>
+          </div>
         ),
+        duration: 2000,
       });
+
+      router.push("/invoices");
     } catch (error) {
       toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+        className: "border-0",
+        description: (
+          <div className="flex items-center gap-2">
+            <CircleAlert className="h-5 w-5" />
+            <span>
+              {error instanceof Error
+                ? error.message
+                : "An unknown error occurred"}
+            </span>
+          </div>
+        ),
+        duration: 2000,
       });
     }
   }
 
+  const subTotal = services.reduce(
+    (total, service) =>
+      total + (service.amount ?? 0) * Number(currency.toFixed(2)),
+    0
+  );
+  const totalVat = parseFloat(
+    services
+      .reduce(
+        (total, service) =>
+          total + Number(service.service_vat_amount.toFixed(2)),
+        0
+      )
+      .toFixed(2)
+  );
+
+  const totalAmount = subTotal + totalVat;
   return (
     <div>
-      {findpayment}
       <ServiceSheetModal />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -193,6 +228,52 @@ export function InvoicesForm({
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="md:col-span-1 lg: col-span-2">
+                  <FormLabel className="flex items-center gap-2 mb-2">
+                    <CreditCard className="h-4 w-4" />
+                    Invoice Type
+                  </FormLabel>
+                  <ComboboxForm
+                    data={invoice_type}
+                    form={form}
+                    name="invoice_type"
+                    formName="name"
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="trn"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>TRN </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="TRN"
+                          {...field}
+                          type="text" // Changed from "number" to "text"
+                          onChange={(e) => {
+                            // Remove any non-digit characters
+                            const cleanValue = e.target.value.replace(
+                              /\D/g,
+                              ""
+                            );
+                            // Remove leading zeros
+                            const withoutLeadingZeros =
+                              cleanValue.replace(/^0+/, "") || "";
+                            // Update the form value as a number (or empty string)
+                            field.onChange(
+                              withoutLeadingZeros
+                                ? Number(withoutLeadingZeros)
+                                : ""
+                            );
+                          }}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="invoice_number"
@@ -204,6 +285,22 @@ export function InvoicesForm({
                       </FormLabel>
                       <FormControl>
                         <Input placeholder="e.g., INV-2023-001" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-1 lg: col-span-2">
+                      <FormLabel className="flex items-center gap-2">
+                        <Receipt className="h-4 w-4" />
+                        Subject
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Subject" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -291,16 +388,16 @@ export function InvoicesForm({
 
                 <FormField
                   control={form.control}
-                  name="currency_value"
+                  name="exchange_rate"
                   render={({ field }) => {
                     return (
                       <FormItem className="md:col-span-1 lg: col-span-2">
                         <FormLabel className="flex items-center gap-2">
                           <span> {getCurrencySymbol(currencyId)}</span>
-                          Currency Value
+                          Exchange Rate
                         </FormLabel>
                         <FormControl>
-                          <div className="space-y-2 min-w-[300px]">
+                          <div className="space-y-2">
                             <div className="relative">
                               <Input
                                 className="peer pe-12 ps-6 bg-muted"
@@ -357,128 +454,72 @@ export function InvoicesForm({
               <Separator className="my-6" />
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                <FormField
-                  control={form.control}
-                  name="amount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Calculator className="h-4 w-4" />
-                        Sub Total
-                      </FormLabel>
-                      <FormControl>
-                        <div className="space-y-2 min-w-[300px]">
-                          <div className="relative">
-                            <Input
-                              className="peer pe-12 ps-6 bg-muted"
-                              placeholder="0.00"
-                              {...field}
-                              type="number"
-                              readOnly
-                              value={field?.value?.toFixed(2)}
-                            />
-                            <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
-                              {getCurrencySymbol(currencyId)}
-                            </span>
-                            <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
-                              {currencyId}
-                            </span>
-                          </div>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="total_vat_amount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Percent className="h-4 w-4" />
-                        VAT Amount
-                      </FormLabel>
-                      <FormControl>
-                        <div className="space-y-2 min-w-[300px]">
-                          <div className="relative">
-                            <Input
-                              className="peer pe-12 ps-6 bg-muted"
-                              placeholder="0.00"
-                              {...field}
-                              type="number"
-                              readOnly
-                              value={field?.value?.toFixed(2)}
-                            />
-                            <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
-                              {getCurrencySymbol(currencyId)}
-                            </span>
-                            <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
-                              {currencyId}
-                            </span>
-                          </div>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="total_amount"
-                  render={({ field }) => {
-                    const servicesSubTotal = form
-                      .watch("services")
-                      .reduce(
-                        (total, service) => total + (service.amount || 0),
-                        0
-                      );
-
-                    const servicesTotalVat = form
-                      .watch("services")
-                      .reduce(
-                        (total, service) =>
-                          total + (service.service_vat_amount || 0),
-                        0
-                      );
-
-                    const totalAmount = servicesSubTotal + servicesTotalVat;
-
-                    const convertedTotalAmount = totalAmount * currency;
-
-                    return (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <span> {getCurrencySymbol(currencyId)}</span>
-                          Total Amount
-                        </FormLabel>
-                        <FormControl>
-                          <div className="space-y-2 min-w-[300px]">
-                            <div className="relative">
-                              <Input
-                                className="peer pe-12 ps-6 bg-muted"
-                                placeholder="0.00"
-                                {...field}
-                                type="number"
-                                readOnly
-                                value={convertedTotalAmount.toFixed(2)}
-                              />
-                              <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
-                                {getCurrencySymbol(currencyId)}
-                              </span>
-                              <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
-                                {currencyId}
-                              </span>
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
+                {/* Subtotal */}
+                <div className="space-y-2">
+                  <FormLabel className="flex items-center gap-2">
+                    <Calculator className="h-4 w-4" />
+                    Sub Total
+                  </FormLabel>
+                  <div className="relative">
+                    <Input
+                      className="peer pe-12 ps-6 bg-muted"
+                      placeholder="0.00"
+                      type="number"
+                      readOnly
+                      value={subTotal.toFixed(2)}
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
+                      {getCurrencySymbol(currencyId)}
+                    </span>
+                    <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
+                      {currencyId}
+                    </span>
+                  </div>
+                </div>
+                {/* Total Vat */}
+                <div className="space-y-2">
+                  <FormLabel className="flex items-center gap-2">
+                    <Percent className="h-4 w-4" />
+                    VAT Amount
+                  </FormLabel>
+                  <div className="relative">
+                    <Input
+                      className="peer pe-12 ps-6 bg-muted"
+                      placeholder="0.00"
+                      type="number"
+                      readOnly
+                      value={totalVat.toFixed(2)}
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
+                      {getCurrencySymbol(currencyId)}
+                    </span>
+                    <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
+                      {currencyId}
+                    </span>
+                  </div>
+                </div>
+                {/* Total Amount */}
+                <div className="space-y-2">
+                  <FormLabel className="flex items-center gap-2">
+                    <span> {getCurrencySymbol(currencyId)}</span>
+                    Total Amount
+                  </FormLabel>
+                  <div className="relative">
+                    <Input
+                      className="peer pe-12 ps-6 bg-muted"
+                      placeholder="0.00"
+                      type="number"
+                      readOnly
+                      value={totalAmount.toFixed(2)}
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
+                      {getCurrencySymbol(currencyId)}
+                    </span>
+                    <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
+                      {currencyId}
+                    </span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -490,43 +531,10 @@ export function InvoicesForm({
                   <span> {getCurrencySymbol(currencyId)}</span>
                   Total Amount Due
                 </div>
-                <FormField
-                  control={form.control}
-                  name="total_amount"
-                  render={() => {
-                    const servicesSubTotal = form
-                      .watch("services")
-                      .reduce(
-                        (total, service) => total + (service.amount || 0),
-                        0
-                      );
 
-                    const servicesTotalVat = form
-                      .watch("services")
-                      .reduce(
-                        (total, service) =>
-                          total + (service.service_vat_amount || 0),
-                        0
-                      );
-
-                    const totalAmount = servicesSubTotal + servicesTotalVat;
-
-                    const convertedTotalAmount = totalAmount * currency;
-
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <span>
-                            <div className="text-2xl font-bold">
-                              {convertedTotalAmount.toFixed(2)}
-                            </div>
-                          </span>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
+                <div className="text-2xl font-bold">
+                  {totalAmount.toFixed(2)}
+                </div>
               </div>
 
               <div className="flex justify-end mt-6">
@@ -534,8 +542,14 @@ export function InvoicesForm({
                   type="submit"
                   size="lg"
                   className="px-6"
-                  disabled={action === "edit" && !form.formState.isDirty}
+                  disabled={
+                    form.formState.isSubmitting ||
+                    (action === "edit" && !form.formState.isDirty)
+                  }
                 >
+                  {form.formState.isSubmitting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
                   {action === "edit" ? "Update Invoice" : "Create Invoice"}
                 </Button>
               </div>

@@ -1,8 +1,11 @@
 import { createClient } from "@/utils/supabase/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const supabase = await createClient();
+  const { searchParams } = new URL(req.url);
+
+  const id = searchParams.get("id");
 
   const { data, error } = await supabase
     .from("invoices")
@@ -16,6 +19,7 @@ export async function GET() {
 
       `
     )
+    .eq("id", id)
     .is("deleted_at", null)
     .is("invoice_services.deleted_at", null);
 

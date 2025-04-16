@@ -89,9 +89,10 @@ export function DataTableToolbar<TData extends InvoicesSchemaType>({
         )}
 
         <Button variant="default" size="sm">
-          <Plus />
-
-          <Link href="/invoices/create">Create Invoice</Link>
+          <Link href="/invoices/create" className="gap-1 flex">
+            <Plus />
+            Create Invoice
+          </Link>
         </Button>
       </div>
     </div>

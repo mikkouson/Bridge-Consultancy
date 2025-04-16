@@ -49,7 +49,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
         <div className="w-[120px] truncate font-medium">{formattedDate}</div>
       );
     },
-    enableSorting: false,
+    enableSorting: true,
     enableHiding: false,
   },
 
@@ -67,13 +67,13 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "vat",
+    accessorKey: "currency",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Vat" />
+      <DataTableColumnHeader column={column} title="Currency" />
     ),
     cell: ({ row }) => (
       <div className="w-[120px] truncate font-medium">
-        {row.getValue("vat")}
+        {row.getValue("currency")}
       </div>
     ),
     enableSorting: false,
