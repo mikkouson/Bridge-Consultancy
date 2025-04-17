@@ -21,6 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
+import { SuccessToast } from "../toasts/success-toast";
+import { CheckCircle, CircleAlert } from "lucide-react";
 
 export function CustomerForm({
   data = {},
@@ -52,15 +54,32 @@ export function CustomerForm({
       }
 
       toast({
-        title: "Success",
-        description: "Company created successfully",
+        variant: "success",
+        className: "border-0",
+        description: (
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5" />
+            <span>Customer created successfully!</span>
+          </div>
+        ),
+        duration: 2000,
       });
       setOpen(false);
     } catch (error) {
       toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+        className: "border-0",
+        description: (
+          <div className="flex items-center gap-2">
+            <CircleAlert className="h-5 w-5" />
+            <span>
+              {error instanceof Error
+                ? error.message
+                : "An unknown error occurred"}
+            </span>
+          </div>
+        ),
+        duration: 2000,
       });
     }
   }
