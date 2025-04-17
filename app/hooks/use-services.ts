@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import useSWR from "swr";
 import { createClient } from "@/utils/supabase/client";
-import { error } from "console";
 export function useServices() {
   const { data, mutate, isLoading, error } = useSWR("/api/services", (url) =>
     fetch(url).then((res) => res.json())
