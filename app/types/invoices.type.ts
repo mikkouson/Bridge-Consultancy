@@ -9,6 +9,7 @@ export const InvoicesSchema = z.object({
       name: z.string(),
       company_name: z.string(),
       email: z.string(),
+      contact: z.string().optional(),
     })
     .optional(), // mark as optional if not always included
   invoice_number: z.string().refine((val) => val.toString().length === 9, {
@@ -17,6 +18,9 @@ export const InvoicesSchema = z.object({
   trn: z.number().refine((val) => val.toString().length === 15, {
     message: "TRN must be exactly 15 digits long.",
   }),
+  paid: z.number().optional(),
+  balance: z.number().optional(),
+
   date: z.coerce.date(),
   payment_option: z.number().min(1, { message: "Payment option is required." }),
   currency: z.string().min(1, { message: "Currency is required" }),
