@@ -21,7 +21,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   if (isLoading) return <div className="p-8">Loading invoice details...</div>;
 
   const invoice = data[0];
-
+  const payments = data[0].payments;
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex items-center justify-between mb-6">
@@ -56,7 +56,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h2 className="text-lg font-medium mb-4">Payment Details</h2>
-          <PaymentForm id={id} data={invoice} />
+          <PaymentForm id={id} data={payments} invoice={invoice} />
         </div>
 
         <div>

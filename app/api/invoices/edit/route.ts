@@ -15,8 +15,8 @@ export async function GET(req: NextRequest) {
 
       companies(*),
       invoice_services:invoice_services!inner(*),
-      payment_options(*)
-
+      payment_options(*),
+      payments(*)
       `
     )
     .eq("id", id)

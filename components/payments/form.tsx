@@ -30,6 +30,7 @@ import { Calendar } from "../ui/calendar";
 import { updatePayment, createPayment } from "@/app/(admin)/payments/actions";
 import { Textarea } from "../ui/textarea";
 import { ComboboxForm } from "../popover";
+import { InvoicesSchemaType } from "@/app/types/invoices.type";
 const payment_mode = [
   { id: "Bank Transfer", name: "Bank Transfer" },
   { id: "Cash", name: "Cash" },
@@ -39,10 +40,12 @@ export function PaymentForm({
   data = {},
   id,
   action,
+  invoice,
 }: {
   id?: string;
   data?: Partial<PaymentsSchemaType>;
   action?: "create" | "edit";
+  invoice?: Partial<InvoicesSchemaType>;
 }) {
   const form = useForm<z.infer<typeof PaymentsSchema>>({
     resolver: zodResolver(PaymentsSchema),
@@ -171,28 +174,43 @@ export function PaymentForm({
           name="amount"
           render={({ field }) => {
             return (
-              <FormItem className="md:col-span-1 lg: col-span-2">
+              <FormItem className="gap-2 md:col-span-1 lg: col-span-2">
                 <FormLabel>
                   Amount <span className="text-red-500 text-lg">*</span>
                 </FormLabel>
                 <FormControl>
-                  <div className="space-y-2">
-                    <div className="relative">
+                  <div className=" flex  gap-2 justify-center items-center">
+                    <div className="relative w-full">
                       <Input
                         className="peer pe-12 ps-8 "
                         placeholder="0.00"
                         {...field}
                         type="number"
+                        onInput={(e) => {
+                          const input = e.currentTarget;
+                          const max = invoice?.total_amount; // set your desired max
+                          if (max && parseFloat(input.value) > max) {
+                            input.valueAsNumber = max;
+                          }
+                        }}
                       />
                       <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
-                        {data.currency
-                          ? currencySymbols[data.currency] ?? "AED"
+                        {invoice?.currency
+                          ? currencySymbols[invoice.currency] ?? "AED"
                           : "AED"}
                       </span>
                       <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-muted-foreground peer-disabled:opacity-50">
-                        {data.currency}
+                        {invoice?.currency}
                       </span>
                     </div>
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        form.setValue("amount", invoice?.total_amount ?? 0)
+                      }
+                    >
+                      Max
+                    </Button>
                   </div>
                 </FormControl>
                 <FormMessage />
