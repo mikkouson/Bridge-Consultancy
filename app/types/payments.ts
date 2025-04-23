@@ -11,6 +11,12 @@ export const PaymentsSchema = z.object({
   payment_method: z.string().min(1, { message: "Company is required." }),
   comment: z.string().optional(),
   deleted_at: z.string().optional(),
+  invoices: z
+    .object({
+      invoice_number: z.string().optional(),
+      currency: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type PaymentsSchemaType = z.infer<typeof PaymentsSchema>;

@@ -4,6 +4,7 @@ export const InvoicesSchema = z.object({
   id: z.number().optional(),
   deleted_at: z.string().nullable().optional(),
   company: z.number().min(1, { message: "Company is required." }),
+  status: z.string().optional(),
   companies: z
     .object({
       name: z.string(),

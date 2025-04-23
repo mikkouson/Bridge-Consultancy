@@ -1,14 +1,13 @@
 "use client";
 
+import { InvoicesSchemaType } from "@/app/types/invoices.type";
 import { PaymentForm } from "@/components/payments/form";
+import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText } from "lucide-react";
+import Link from "next/link";
 import { use } from "react";
 import useSWR from "swr";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Badge } from "./badge";
-import { InvoicesSchemaType } from "@/app/types/invoices.type";
-import { ServicesSchemaType } from "@/app/types/services.type";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -21,7 +20,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   if (isLoading) return <div className="p-8">Loading invoice details...</div>;
 
   const invoice = data[0];
-  const payments = data[0].payments;
+  const payments = data[0]?.payments;
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex items-center justify-between mb-6">
@@ -68,9 +67,6 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 };
 
 function InvoiceSummary({ invoice }: { invoice: InvoicesSchemaType }) {
-  if (!invoice) {
-    return <p>asd</p>;
-  }
   return (
     <div className="space-y-6">
       <div className="bg-muted p-6 rounded-lg">

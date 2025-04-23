@@ -1,6 +1,8 @@
 "use client";
 
-import { PaymentsSchemaType, PaymentsSchema } from "@/app/types/payments";
+import { createPayment, updatePayment } from "@/app/(admin)/payments/actions";
+import { InvoicesSchemaType } from "@/app/types/invoices.type";
+import { PaymentsSchema, PaymentsSchemaType } from "@/app/types/payments";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,25 +14,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Asterisk,
-  CalendarIcon,
-  CheckCircle,
-  ChevronDown,
-  CircleAlert,
-  Percent,
-} from "lucide-react";
+import { format } from "date-fns";
+import { CalendarIcon, CheckCircle, CircleAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
-import { updatePayment, createPayment } from "@/app/(admin)/payments/actions";
-import { Textarea } from "../ui/textarea";
 import { ComboboxForm } from "../popover";
-import { InvoicesSchemaType } from "@/app/types/invoices.type";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Textarea } from "../ui/textarea";
 const payment_mode = [
   { id: "Bank Transfer", name: "Bank Transfer" },
   { id: "Cash", name: "Cash" },
@@ -188,10 +181,14 @@ export function PaymentForm({
                         type="number"
                         onInput={(e) => {
                           const input = e.currentTarget;
-                          const max = invoice?.total_amount; // set your desired max
+                          const max = invoice?.balance; // set your desired max
                           if (max && parseFloat(input.value) > max) {
                             input.valueAsNumber = max;
                           }
+                        }}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          field.onChange(isNaN(value) ? undefined : value);
                         }}
                       />
                       <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm text-muted-foreground peer-disabled:opacity-50">
@@ -206,7 +203,7 @@ export function PaymentForm({
                     <Button
                       type="button"
                       onClick={() =>
-                        form.setValue("amount", invoice?.total_amount ?? 0)
+                        form.setValue("amount", invoice?.balance ?? 0)
                       }
                     >
                       Max

@@ -20,9 +20,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Separator } from "../ui/separator";
-import { SuccessToast } from "../toasts/success-toast";
 import { CheckCircle, CircleAlert } from "lucide-react";
+import { Separator } from "../ui/separator";
 
 export function CustomerForm({
   data = {},

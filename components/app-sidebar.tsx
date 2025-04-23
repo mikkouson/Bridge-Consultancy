@@ -55,6 +55,11 @@ const data = {
       icon: Receipt,
     },
     {
+      title: "Payments",
+      url: "payments",
+      icon: Receipt,
+    },
+    {
       title: "Services",
       url: "services",
       icon: HandCoins,

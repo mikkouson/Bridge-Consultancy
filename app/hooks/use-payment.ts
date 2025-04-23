@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import useSWR from "swr";
 import { createClient } from "@/utils/supabase/client";
-export function useInvoice() {
-  const { data, mutate, isLoading, error } = useSWR("/api/invoices", (url) =>
+export function usePayment() {
+  const { data, mutate } = useSWR("/api/payments", (url) =>
     fetch(url).then((res) => res.json())
   );
 
@@ -11,10 +11,10 @@ export function useInvoice() {
   // Subscribe to realtime updates for appointments
   useEffect(() => {
     const channel = supabase
-      .channel("realtime-invoices")
+      .channel("realtime-payments")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "invoices" },
+        { event: "*", schema: "public", table: "payments" },
         () => {
           mutate();
         }
@@ -26,5 +26,5 @@ export function useInvoice() {
     };
   }, [supabase, mutate]);
 
-  return { data, mutate, isLoading, error };
+  return { data, mutate };
 }
