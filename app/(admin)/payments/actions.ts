@@ -31,7 +31,7 @@ export async function deletePayment(id: number) {
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from("payment_options")
+    .from("payments")
     .update({
       deleted_at: new Date().toISOString(),
     })
@@ -54,9 +54,8 @@ export async function updatePayment(formData: PaymentsSchemaType) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("payment_options")
+    .from("payments")
     .update({
-      invoice_id: formData.invoice_id,
       amount: formData.amount,
       date: formData.date,
       payment_method: formData.payment_method,

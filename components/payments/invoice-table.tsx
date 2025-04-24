@@ -4,11 +4,27 @@ import { useInvoice } from "@/app/hooks/use-invoices";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import InvoiceCard from "./invoice-card";
 import { InvoicesSchemaType } from "@/app/types/invoices.type";
+import { Skeleton } from "../ui/skeleton";
 
 export default function InvoiceSheet() {
   const { data: invoiceData, isLoading, error } = useInvoice();
+  if (isLoading) {
+    return (
+      <div className="w-full mt-2">
+        <div className="mb-4 flex h-10 items-center justify-start rounded-md bg-muted p-1">
+          <Skeleton className="h-8 w-32 rounded-sm" />
+          <Skeleton className="h-8 w-32 ml-1 rounded-sm" />
+          <Skeleton className="h-8 w-32 ml-1 rounded-sm" />
+        </div>
 
-  if (isLoading) return <>loadign</>;
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-24 w-full rounded-md" />
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <>err</>;
 
   // Filter invoices directly in the render function

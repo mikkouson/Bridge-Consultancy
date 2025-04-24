@@ -3,10 +3,12 @@
 import { Row } from "@tanstack/react-table";
 import { PaymentsSchemaType } from "@/app/types/payments";
 
-// import { DeleteConfirmationDialog } from "@/components/delete-dialog";
-// import { deleteService } from "../../app/(admin)/services/actions";
-// import { SheetModal } from "@/components/sheet-modal";
-// // import { ServiceForm } from "./form";
+import { DeleteConfirmationDialog } from "@/components/delete-dialog";
+import { SheetModal } from "@/components/sheet-modal";
+import { deletePayment } from "@/app/(admin)/payments/actions";
+import Link from "next/link";
+// import { ServiceForm } from "./form";
+import { FilePenLine } from "lucide-react";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -26,14 +28,18 @@ export function DataTableRowActions<TData extends PaymentsSchemaType>({
         {(setOpen) => (
           <ServiceForm data={row.original} setOpen={setOpen} action="edit" />
         )}
-      </SheetModal>
+      </SheetModal> */}
+
+      <Link href={`payments/edit/${row.original.id}`}>
+        <FilePenLine className=" cursor-pointer text-gray-600 hover:text-green-500 " />
+      </Link>
       <DeleteConfirmationDialog
         onConfirm={async () => {
-          await deleteService((row.original as { id: number }).id);
+          await deletePayment((row.original as { id: number }).id);
         }}
         title="Delete Service?"
         description="This will permanently remove the service."
-      /> */}
+      />
     </div>
   );
 }
