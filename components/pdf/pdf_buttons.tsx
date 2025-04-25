@@ -6,8 +6,9 @@ import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { InvoiceDocument } from "./invoice-pdf-template";
 
+// Dynamically import the entire @react-pdf/renderer package
 const PDFDownloadLink = dynamic(
-  () => import("@/components/pdf/PDFDownloadLink"),
+  () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
   {
     ssr: false,
     loading: () => <p>Loading...</p>,
@@ -23,37 +24,47 @@ export default function InvoicePage({
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const handlePrint = async () => {
-    const blob = await pdf(
-      <InvoiceDocument invoiceData={invoiceData} />
-    ).toBlob();
-    const blobURL = URL.createObjectURL(blob);
+    try {
+      const blob = await pdf(
+        <InvoiceDocument invoiceData={invoiceData} />
+      ).toBlob();
+      const blobURL = URL.createObjectURL(blob);
 
-    const iframe = iframeRef.current;
-    if (iframe) {
-      iframe.src = blobURL;
+      const iframe = iframeRef.current;
+      if (iframe) {
+        iframe.src = blobURL;
 
-      iframe.onload = () => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      };
+        iframe.onload = () => {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+        };
+      }
+    } catch (error) {
+      console.error("Error generating PDF for print:", error);
     }
   };
 
   return (
     <div>
-      <div className=" flex justify-center  gap-1">
-        <PDFDownloadLink
-          className="cursor-pointer text-gray-600"
-          document={<InvoiceDocument invoiceData={invoiceData} />}
-          fileName={fileName}
-        >
-          <Download />
-        </PDFDownloadLink>
+      {invoiceData && (
+        <div className="flex justify-center gap-1">
+          {/* Wrap PDFDownloadLink in a div since it's dynamically loaded */}
+          <div className="cursor-pointer text-gray-600">
+            <PDFDownloadLink
+              document={<InvoiceDocument invoiceData={invoiceData} />}
+              fileName={fileName}
+            >
+              {({ loading }) =>
+                loading ? <span>Loading document...</span> : <Download />
+              }
+            </PDFDownloadLink>
+          </div>
 
-        <button onClick={handlePrint}>
-          <Printer className="cursor-pointer text-gray-600" />
-        </button>
-      </div>
+          <button onClick={handlePrint}>
+            <Printer className="cursor-pointer text-gray-600" />
+          </button>
+        </div>
+      )}
 
       {/* Hidden iframe for printing */}
       <iframe ref={iframeRef} style={{ display: "none" }} title="print-frame" />

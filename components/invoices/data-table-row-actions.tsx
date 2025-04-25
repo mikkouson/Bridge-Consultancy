@@ -17,7 +17,7 @@ export function DataTableRowActions<TData extends InvoicesSchemaType>({
 }: DataTableRowActionsProps<TData>) {
   return (
     <div className="flex items-center justify-start ">
-      <InvoicePage invoiceData={row.original} />
+      {row.original && <InvoicePage invoiceData={row.original} />}
       <Link href={`/invoices/edit/${row.original.id}`}>
         <FilePenLine className="cursor-pointer text-gray-600 hover:text-green-500" />
       </Link>
