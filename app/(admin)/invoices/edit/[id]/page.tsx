@@ -1,6 +1,7 @@
 "use client";
 
 import { InvoicesForm } from "@/components/invoices/invoice-form";
+import Loader from "@/components/loader";
 import { use } from "react";
 import useSWR from "swr";
 
@@ -11,7 +12,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     (url) => fetch(url).then((res) => res.json())
   );
   if (error) return <p>Error</p>;
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loader />;
 
   return (
     <div>

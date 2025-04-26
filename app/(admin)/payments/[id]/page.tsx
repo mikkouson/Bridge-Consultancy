@@ -8,6 +8,7 @@ import Link from "next/link";
 import { use } from "react";
 import useSWR from "swr";
 import { Badge } from "./badge";
+import Loader from "@/components/loader";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -17,8 +18,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   );
 
   if (error) return <div className="p-8">Error loading invoice data</div>;
-  if (isLoading) return <div className="p-8">Loading invoice details...</div>;
-
+  if (isLoading) return <Loader />;
   const invoice = data[0];
   const payments = data[0]?.payments;
   return (

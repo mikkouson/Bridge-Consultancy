@@ -17,6 +17,7 @@ interface SheetModalProps {
   description?: string;
   children?: (setOpen: (open: boolean) => void) => ReactNode;
   edit?: boolean;
+  button?: boolean;
 }
 
 export function SheetModal({
@@ -25,6 +26,7 @@ export function SheetModal({
   title = "Title",
   description = "Description",
   edit = false,
+  button = false,
   children,
 }: SheetModalProps) {
   const [open, setOpen] = useState(false);
@@ -33,7 +35,13 @@ export function SheetModal({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {edit ? (
-          <FilePenLine className=" cursor-pointer text-gray-600 hover:text-green-500 " />
+          button ? (
+            <Button variant="outline" size="sm">
+              {Icon && <FilePenLine />} Edit
+            </Button>
+          ) : (
+            <FilePenLine className="cursor-pointer text-gray-600 hover:text-green-500" />
+          )
         ) : (
           <Button variant="default" size="sm">
             {Icon && <Icon />} {triggerLabel}

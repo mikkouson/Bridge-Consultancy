@@ -1,17 +1,21 @@
 "use client";
 import { InvoicesSchemaType } from "@/app/types/invoices.type";
 import { pdf } from "@react-pdf/renderer";
-import { Download, Printer } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { InvoiceDocument } from "./invoice-pdf-template";
+import { Button } from "../ui/button";
 
 // Dynamically import the entire @react-pdf/renderer package
 const PDFDownloadLink = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
+  () => import("@/components/pdf/PDFDownloadLink"),
   {
     ssr: false,
-    loading: () => <p>Loading...</p>,
+    loading: () => (
+      <Button variant="ghost" className="w-full justify-start" disabled>
+        Download
+      </Button>
+    ),
   }
 );
 
@@ -47,22 +51,38 @@ export default function InvoicePage({
   return (
     <div>
       {invoiceData && (
-        <div className="flex justify-center gap-1">
+        <div className="flex flex-col justify-center gap-1">
           {/* Wrap PDFDownloadLink in a div since it's dynamically loaded */}
-          <div className="cursor-pointer text-gray-600">
+          <div className="cursor-pointer ">
             <PDFDownloadLink
               document={<InvoiceDocument invoiceData={invoiceData} />}
               fileName={fileName}
             >
               {({ loading }) =>
-                loading ? <span>Loading document...</span> : <Download />
+                loading ? (
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    aria-disabled={loading}
+                  >
+                    Download
+                  </Button>
+                ) : (
+                  <Button variant="ghost" className="w-full justify-start">
+                    Download
+                  </Button>
+                )
               }
             </PDFDownloadLink>
           </div>
 
-          <button onClick={handlePrint}>
-            <Printer className="cursor-pointer text-gray-600" />
-          </button>
+          <Button
+            onClick={handlePrint}
+            variant="ghost"
+            className="w-full justify-start"
+          >
+            Print
+          </Button>
         </div>
       )}
 

@@ -32,10 +32,10 @@ export function DataTableToolbar<TData extends InvoicesSchemaType>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter company name..."
-          value={(table.getColumn("company")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter Customer name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("company")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />

@@ -18,11 +18,13 @@ export function DeleteConfirmationDialog({
   title = "Are you absolutely sure?",
   description = "This action cannot be undone.",
   triggerIcon: TriggerIcon = Trash2,
+  button = false,
 }: {
   onConfirm: () => Promise<void> | void;
   title?: string;
   description?: string;
   triggerIcon?: React.ComponentType<{ className?: string }>;
+  button?: boolean;
 }) {
   const form = useForm();
   const {
@@ -41,7 +43,13 @@ export function DeleteConfirmationDialog({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <TriggerIcon className="cursor-pointer text-gray-600 hover:text-destructive" />
+        {button ? (
+          <Button variant="ghost" className="w-full justify-start">
+            Delete
+          </Button>
+        ) : (
+          <TriggerIcon className="cursor-pointer text-gray-600 hover:text-destructive" />
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

@@ -9,6 +9,25 @@ import { Badge } from "../ui/badge";
 
 export const columns: ColumnDef<InvoicesSchemaType>[] = [
   {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Customer" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[150px] truncate font-medium">
+        {row.original.companies?.name || "N/A"}
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    filterFn: (row, id, filterValue) => {
+      // Correctly access the nested company name for filtering
+      const companyName = row.original.companies?.name || "";
+      return companyName.toLowerCase().includes(filterValue.toLowerCase());
+    },
+  },
+  // Other columns remain unchanged
+  {
     accessorKey: "invoice_number",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Invoice Number" />
@@ -20,11 +39,8 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-    filterFn: (row, columnId, filterValue) => {
-      const cellValue = row.getValue(columnId) as string;
-      return cellValue?.toLowerCase().includes(filterValue.toLowerCase());
-    },
   },
+
   {
     accessorKey: "company",
     header: ({ column }) => (
@@ -32,20 +48,20 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.original.companies?.name || "N/A"}
-        {/* {row.getValue("company")} */}
+        {row.original.companies?.company_name || "N/A"}
       </div>
     ),
     enableSorting: false,
     enableHiding: false,
   },
+
   {
     accessorKey: "date",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Invoice Date" />
     ),
     cell: ({ row }) => {
-      const formattedDate = moment(row.getValue("date")).format("MMMM D, YYYY"); // Example: September 7, 2024
+      const formattedDate = moment(row.getValue("date")).format("MMMM D, YYYY");
       return (
         <div className="w-[120px] truncate font-medium">{formattedDate}</div>
       );
@@ -61,7 +77,6 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
         {row.original.payment_options?.bank_name || "N/A"}
-        {/* {row.getValue("company")} */}
       </div>
     ),
     enableSorting: false,
