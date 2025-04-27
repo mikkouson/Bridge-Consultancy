@@ -20,11 +20,16 @@ import { CSVLink } from "react-csv";
 interface DataTableToolbarProps<TData extends object> {
   table: Table<TData>;
   data: TData[];
+
+  column: string;
+  placeholder: string;
 }
 
 export function DataTableToolbar<TData extends InvoicesSchemaType>({
   table,
   data,
+  column = "Name",
+  placeholder = "Customer Name",
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -32,10 +37,12 @@ export function DataTableToolbar<TData extends InvoicesSchemaType>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter Customer name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          placeholder={`${placeholder}`}
+          value={
+            (table.getColumn(`${column}`)?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn(`${column}`)?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />

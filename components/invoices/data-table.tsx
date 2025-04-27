@@ -32,11 +32,15 @@ import { InvoicesSchemaType } from "@/app/types/invoices.type";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  column?: string;
+  placeholder?: string;
 }
 
 export function DataTable<TData extends InvoicesSchemaType, TValue>({
   columns,
   data,
+  column = "Name",
+  placeholder = "Customer Name",
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -70,7 +74,12 @@ export function DataTable<TData extends InvoicesSchemaType, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} data={data} />
+      <DataTableToolbar
+        table={table}
+        data={data}
+        column={column}
+        placeholder={placeholder}
+      />
 
       <div className="rounded-md border">
         <Table>

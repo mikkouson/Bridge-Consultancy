@@ -7,6 +7,7 @@ export const InvoicesSchema = z.object({
   status: z.string().optional(),
   companies: z
     .object({
+      id: z.string().optional(),
       name: z.string(),
       company_name: z.string(),
       email: z.string(),

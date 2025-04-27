@@ -1,13 +1,13 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableRowActions } from "./data-table-row-actions";
-import { DataTableColumnHeader } from "../data-table-column-header";
 import { InvoicesSchemaType } from "@/app/types/invoices.type";
 import moment from "moment";
-import { Badge } from "../ui/badge";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
+import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { Badge } from "@/app/(admin)/payments/[id]/badge";
+import { DataTableRowActions } from "@/components/invoices/data-table-row-actions";
 
 export const columns: ColumnDef<InvoicesSchemaType>[] = [
   // Other columns remain unchanged
@@ -23,31 +23,6 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Customer" />
-    ),
-    cell: ({ row }) => (
-      <Link
-        href={`customers/${row.original.companies?.id}`}
-        className="w-[150px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
-      >
-        <span className="truncate">
-          {" "}
-          {row.original.companies?.name || "N/A"}
-        </span>
-        <ExternalLink size={12} />
-      </Link>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-    filterFn: (row, id, filterValue) => {
-      // Correctly access the nested company name for filtering
-      const companyName = row.original.companies?.name || "";
-      return companyName.toLowerCase().includes(filterValue.toLowerCase());
-    },
   },
 
   {

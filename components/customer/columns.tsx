@@ -4,6 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { CustomerSchemaType } from "@/app/types/companies.type";
 import { DataTableColumnHeader } from "../data-table-column-header";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 export const columns: ColumnDef<CustomerSchemaType>[] = [
   {
     accessorKey: "name",
@@ -11,9 +13,13 @@ export const columns: ColumnDef<CustomerSchemaType>[] = [
       <DataTableColumnHeader column={column} title="Customer Name" />
     ),
     cell: ({ row }) => (
-      <div className="w-[150px] truncate font-medium">
-        {row.getValue("name")}
-      </div>
+      <Link
+        href={`customers/${row.original.id}`}
+        className="w-[150px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
+      >
+        <span className="truncate">{row.getValue("name")}</span>
+        <ExternalLink size={12} />
+      </Link>
     ),
     enableSorting: false,
     enableHiding: false,

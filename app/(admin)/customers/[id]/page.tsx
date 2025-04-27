@@ -1,7 +1,7 @@
 "use client";
 import { useCustomerProfile } from "@/app/hooks/use-company-profile";
 import { CustomerForm } from "@/components/customer/form";
-import { columns } from "@/components/invoices/columns";
+import { columns } from "@/components/customer/profile/columns";
 import { DataTable } from "@/components/invoices/data-table";
 import Loader from "@/components/loader";
 import { SheetModal } from "@/components/sheet-modal";
@@ -48,66 +48,70 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <div className="container max-w-8xl mx-auto py-12 px-4">
-      <div className="mb-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div className="flex items-center gap-5">
-          <Avatar className="h-16 w-16 border-0 bg-gray-100">
-            <AvatarFallback className="text-xl font-light">
-              {getInitials(customer.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-3xl font-light tracking-tight">
-              {customer.name}
-            </h1>
-            <div className="flex items-center text-sm text-muted-foreground gap-1">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
-              {customer.company_name}
+      <Card className="mb-8 border-none bg-card-foreground dark:bg-muted shadow-md  ">
+        <CardContent className="p-6">
+          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+            <div className="flex items-center gap-5 text-white">
+              <Avatar className="h-16 w-16 border-0 bg-muted-foreground">
+                <AvatarFallback className="text-xl font-light bg-muted-foreground">
+                  {getInitials(customer.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="mb-1 text-sm font-medium  text-white ">
+                  Client
+                </div>
+                <h1 className="text-3xl font-bold ">{customer.name}</h1>
+                <div className="mt-2 flex flex-col gap-2 text-sm  sm:flex-row sm:gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <Building2 className="h-4 w-4 " />
+                    {customer.company_name}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="h-4 w-4" />
+                    <span> {customer.email}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="h-4 w-4" />
+                    <span> {customer.contact}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className="h-16">
-              <Separator orientation="vertical" />
-            </div>
-          </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <a href={`mailto:${customer.email}`} className="hover:underline">
-                {customer.email}
-              </a>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <a href={`tel:${customer.contact}`} className="hover:underline">
-                {customer.contact}
-              </a>
+            <div className="flex w-full gap-3 justify-end  ">
+              <div className="flex gap-3">
+                <SheetModal
+                  triggerLabel="Create Customer"
+                  title="Create Customer"
+                  description="Fill in the details to create a new customer."
+                  edit={true}
+                  button={true}
+                >
+                  {(setOpen) => (
+                    <CustomerForm
+                      data={customer}
+                      setOpen={setOpen}
+                      action="edit"
+                    />
+                  )}
+                </SheetModal>
+
+                <Button variant="default" size="sm">
+                  <Link href="/invoices/create" className="gap-1 flex">
+                    <Plus />
+                    New Invoice
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex gap-3">
-          <SheetModal
-            triggerLabel="Create Customer"
-            title="Create Customer"
-            description="Fill in the details to create a new customer."
-            edit={true}
-            button={true}
-          >
-            {(setOpen) => (
-              <CustomerForm data={customer} setOpen={setOpen} action="edit" />
-            )}
-          </SheetModal>
+        </CardContent>
+      </Card>
 
-          <Button variant="default" size="sm">
-            <Link href="/invoices/create" className="gap-1 flex">
-              <Plus />
-              New Invoice
-            </Link>
-          </Button>
-        </div>
-      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
+          <div className="h-1 w-full  bg-muted-foreground "></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -122,6 +126,8 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
         <Card>
+          <div className="h-1 w-full  bg-muted-foreground "></div>
+
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Invoices</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
@@ -134,6 +140,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
         <Card>
+          <div className="h-1 w-full  bg-muted-foreground "></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Pending Amount
@@ -159,6 +166,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
         <Card>
+          <div className="h-1 w-full  bg-muted-foreground "></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Last Invoice</CardTitle>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
@@ -188,7 +196,12 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
               <TabsTrigger value="paid">Paid</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
-              <DataTable data={customer.invoices} columns={columns} />
+              <DataTable
+                data={customer.invoices}
+                columns={columns}
+                placeholder="Filter Invoice Number..."
+                column="invoice_number"
+              />
             </TabsContent>
             <TabsContent value="pending"></TabsContent>
             <TabsContent value="paid"></TabsContent>
