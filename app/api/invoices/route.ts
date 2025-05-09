@@ -12,8 +12,8 @@ export async function GET() {
 
       companies(*),
       invoice_services:invoice_services!inner(*),
-      payment_options(*)
-
+      payment_options(*),
+      payments(*)
       `
     )
     .is("deleted_at", null)
