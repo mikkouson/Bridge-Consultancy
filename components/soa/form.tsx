@@ -255,7 +255,7 @@ export function SoaForm({
     });
   }, [invoiceData, filters]);
 
-  async function onSubmit(values: any) {
+  async function onSubmit(values: SoaSchemaType) {
     try {
       // Validate that we have at least one statement entry before submitting
       if (!values.statement_entries || values.statement_entries.length === 0) {
