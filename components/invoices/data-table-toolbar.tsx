@@ -28,7 +28,7 @@ interface DataTableToolbarProps<TData extends object> {
 export function DataTableToolbar<TData extends InvoicesSchemaType>({
   table,
   data,
-  column = "Name",
+  column = "name",
   placeholder = "Customer Name",
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;

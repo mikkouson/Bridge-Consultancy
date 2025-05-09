@@ -39,7 +39,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData extends InvoicesSchemaType, TValue>({
   columns,
   data,
-  column = "Name",
+  column = "name",
   placeholder = "Customer Name",
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
