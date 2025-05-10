@@ -13,7 +13,7 @@ import { SoaForm } from "@/components/soa/form";
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const { data, error, isLoading } = useSWR(
-    `/api/invoices/edit?id=${id}`,
+    `/api/companies/profile?id=${id}`,
     (url) => fetch(url).then((res) => res.json())
   );
 
@@ -43,12 +43,12 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
               Paid
             </Badge>
           )}
-          <Link href={`/invoices/${id}`}>
+          {/* <Link href={`/invoices/${id}`}>
             <Button variant="outline" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               View Invoice
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
       {/* 
