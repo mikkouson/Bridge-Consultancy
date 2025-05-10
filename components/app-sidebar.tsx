@@ -70,6 +70,11 @@ const data = {
       icon: CreditCard,
     },
     {
+      title: "Statement of Accounts",
+      url: "soa",
+      icon: Receipt,
+    },
+    {
       title: "Users",
       url: "users",
       icon: UserCog,

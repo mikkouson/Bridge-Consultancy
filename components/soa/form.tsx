@@ -1,5 +1,6 @@
 "use client";
 
+import { CreateSOA } from "@/app/(admin)/soa/actions";
 import { InvoicesSchemaType } from "@/app/types/invoices.type";
 import { SoaSchema, SoaSchemaType, StatementEntryType } from "@/app/types/soa";
 import { Button } from "@/components/ui/button";
@@ -18,15 +19,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, CircleAlert, Search } from "lucide-react";
 import React from "react";
+import { DateRange } from "react-day-picker";
 import { useForm } from "react-hook-form";
+import { DatePickerWithRange } from "../date-range-picker";
 import { Calendar } from "../ui/calendar";
 import { Checkbox } from "../ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { DateRange } from "react-day-picker";
-import { DatePickerWithRange } from "../date-range-picker";
-import { SoaSummary } from "./summary";
 import { EntriesTable } from "./entries-table";
-import { CreateSOA } from "@/app/(admin)/soa/actions";
+import { SoaSummary } from "./summary";
 
 export function SoaForm({
   data = [],
@@ -296,11 +296,11 @@ export function SoaForm({
         statement_entries: entriesWithCorrectCurrency,
       };
 
-      // if (action === "edit") {
-      //   // await updatePayment(updatedValues);
-      // } else {
-      //   await CreateSOA(updatedValues);
-      // }
+      if (action === "edit") {
+        // await updatePayment(updatedValues);
+      } else {
+        await CreateSOA(updatedValues);
+      }
 
       toast({
         title: "You submitted the following values:",

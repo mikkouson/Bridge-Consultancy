@@ -15,7 +15,7 @@ interface InvoiceCardProps {
   invoice: InvoicesSchemaType;
 }
 
-export default function InvoiceCard({ invoice }: InvoiceCardProps) {
+export default function CompanyCard({ invoice }: InvoiceCardProps) {
   // Determine status color
   const getStatusColor = (status: string) => {
     switch (status) {
