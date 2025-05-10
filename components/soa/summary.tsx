@@ -184,9 +184,9 @@ export function SoaSummary({
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-base font-semibold">Total Due:</p>
-                <p className="text-sm text-muted-foreground">
+                {/* <p className="text-sm text-muted-foreground">
                   As of {format(new Date(), "PPP")}
-                </p>
+                </p> */}
               </div>
               {hasMultipleCurrencies ? (
                 <div className="text-right">
