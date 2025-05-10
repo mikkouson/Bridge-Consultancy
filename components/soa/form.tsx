@@ -1,6 +1,5 @@
 "use client";
 
-import { useInvoice } from "@/app/hooks/use-invoices";
 import { InvoicesSchemaType } from "@/app/types/invoices.type";
 import { SoaSchema, SoaSchemaType, StatementEntryType } from "@/app/types/soa";
 import { Button } from "@/components/ui/button";
@@ -30,33 +29,40 @@ import { EntriesTable } from "./entries-table";
 import { CreateSOA } from "@/app/(admin)/soa/actions";
 
 export function SoaForm({
-  data = {},
+  data = [],
   id,
   action,
-  invoice,
 }: {
   id?: string;
-  data?: Partial<SoaSchemaType>;
+  data?: Array<
+    SoaSchemaType & {
+      name?: string;
+      company_name?: string;
+      email?: string;
+      contact?: string;
+      invoices?: Array<InvoicesSchemaType>;
+    }
+  >;
   action?: "create" | "edit";
-  invoice?: Partial<InvoicesSchemaType>;
 }) {
-  const { data: invoiceData } = useInvoice();
   const [filters, setFilters] = React.useState({
     search: "",
     dateRange: undefined as DateRange | undefined,
   });
 
+  const invoiceData = Array.isArray(data) ? data[0]?.invoices : undefined;
+
   const form = useForm({
     resolver: zodResolver(SoaSchema),
     defaultValues: {
-      id: data?.id ?? 0,
+      id: data[0]?.id ?? 0,
       company_id: Number(id),
-      statement_date: data?.statement_date,
-      opening_balance_date: data?.opening_balance_date || new Date(),
-      opening_balance: data?.opening_balance ?? 0,
-      statement_number: data?.statement_number ?? "",
-      statement_entries: data?.statement_entries ?? [],
-      currency: data?.currency ?? "AED",
+      statement_date: data[0]?.statement_date,
+      opening_balance_date: data[0]?.opening_balance_date || new Date(),
+      opening_balance: data[0]?.opening_balance ?? 0,
+      statement_number: data[0]?.statement_number ?? "",
+      statement_entries: data[0]?.statement_entries ?? [],
+      currency: data[0]?.currency ?? "AED",
     },
   });
   const { isSubmitting } = form.formState;
@@ -81,9 +87,7 @@ export function SoaForm({
     );
   };
 
-  const { totalInvoiced, totalPaid } = calculateTotals();
   const openingBalance = form.watch("opening_balance") || 0;
-  const balance = openingBalance + totalInvoiced - totalPaid;
 
   // Get currency symbol based on currency code
   const getCurrencySymbol = (currencyCode: string) => {
@@ -194,6 +198,7 @@ export function SoaForm({
 
   const removeFromStatement = (invoiceId: number) => {
     const currentEntries = form.getValues("statement_entries") || [];
+    // Remove both invoice and payment entries for this invoice
     const updatedEntries = currentEntries.filter(
       (e) => e.invoice_id !== invoiceId
     );
@@ -215,12 +220,10 @@ export function SoaForm({
             shouldDirty: true,
           });
         }
-        // If currencies become mixed after removal, the main currency remains as it was.
-        // Or, if you prefer to reset or set a specific currency for mixed cases, add logic here.
       }
     } else {
       // No entries left, reset to default
-      const defaultCurrency = data?.currency ?? "AED";
+      const defaultCurrency = data[0]?.currency ?? "AED";
       if (form.getValues("currency") !== defaultCurrency) {
         form.setValue("currency", defaultCurrency, {
           shouldValidate: true,
@@ -293,11 +296,11 @@ export function SoaForm({
         statement_entries: entriesWithCorrectCurrency,
       };
 
-      if (action === "edit") {
-        // await updatePayment(updatedValues);
-      } else {
-        await CreateSOA(updatedValues);
-      }
+      // if (action === "edit") {
+      //   // await updatePayment(updatedValues);
+      // } else {
+      //   await CreateSOA(updatedValues);
+      // }
 
       toast({
         title: "You submitted the following values:",
@@ -554,6 +557,31 @@ export function SoaForm({
 
       {/* Add the Summary Component in the second column */}
       <div className="flex flex-col gap-4">
+        {/* Company Summary */}
+        <div className="p-4 border rounded-lg space-y-2">
+          <h3 className="font-semibold text-lg">Company Information</h3>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {data[0]?.name && (
+              <div>
+                <span className="text-muted-foreground">Customer Name:</span>
+                <p className="font-medium">{data[0]?.name || "N/A"}</p>
+              </div>
+            )}
+            <div>
+              <span className="text-muted-foreground">Company:</span>
+              <p className="font-medium">{data[0]?.company_name || "N/A"}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Email:</span>
+              <p className="font-medium">{data[0]?.email || "N/A"}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Contact:</span>
+              <p className="font-medium">{data[0]?.contact || "N/A"}</p>
+            </div>
+          </div>
+        </div>
+
         <SoaSummary
           openingBalance={Number(openingBalance)}
           statementEntries={statementEntries.map((entry) => {

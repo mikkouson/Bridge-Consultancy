@@ -12,15 +12,17 @@ import { SoaForm } from "@/components/soa/form";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
-  const { data, error, isLoading } = useSWR(
-    `/api/companies/profile?id=${id}`,
-    (url) => fetch(url).then((res) => res.json())
+  const {
+    data: companyData,
+    error: companyError,
+    isLoading: companyLoading,
+  } = useSWR(`/api/companies/profile?id=${id}`, (url) =>
+    fetch(url).then((res) => res.json())
   );
 
-  if (error) return <div className="p-8">Error loading invoice data</div>;
-  if (isLoading) return <Loader />;
-  const invoice = data[0];
-  const payments = data[0]?.payments;
+  if (companyError) return <div className="p-8">Error loading data</div>;
+  if (companyLoading) return <Loader />;
+
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex items-center justify-between mb-6">
@@ -31,38 +33,20 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
             </Button>
           </Link>
           <div>
-            <h1 className="text-xl font-semibold">Record Payment</h1>
+            <h1 className="text-xl font-semibold">
+              Create Statement of Account
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Invoice #{invoice?.invoice_number}
+              For {companyData[0]?.name}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {invoice?.status === "paid" && (
-            <Badge variant="success" className="mr-2">
-              Paid
-            </Badge>
-          )}
-          {/* <Link href={`/invoices/${id}`}>
-            <Button variant="outline" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              View Invoice
-            </Button>
-          </Link> */}
-        </div>
       </div>
-      {/* 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
       <div>
-        <h2 className="text-lg font-medium mb-4">Payment Details</h2>
-        <SoaForm id={id} data={payments} invoice={invoice} />
+        <h2 className="text-lg font-medium mb-4">Statement Details</h2>
+        <SoaForm id={id} data={companyData} />
       </div>
-
-      {/* <div>
-          <InvoiceSummary invoice={invoice} />
-        </div> */}
     </div>
-    // </div>
   );
 };
 

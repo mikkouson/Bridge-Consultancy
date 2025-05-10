@@ -7,7 +7,7 @@ import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 import useSWR from "swr";
-import { Badge } from "../../[id]/badge";
+import { Badge } from "../../create/[id]/badge";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
