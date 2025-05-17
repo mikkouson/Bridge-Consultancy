@@ -63,7 +63,7 @@ export const columns: ColumnDef<ExtendedSoaType>[] = [
       <DataTableColumnHeader column={column} title="Amount Due" />
     ),
     cell: ({ row }) => {
-      const currencyCode = row.original?.currency || "N/A";
+      const currencyCode = row.original?.currency || "-";
 
       const currencySymbols: Record<string, string> = {
         USD: "$",
@@ -93,9 +93,7 @@ export const columns: ColumnDef<ExtendedSoaType>[] = [
         href={`customers/${row.original.company_id?.id}`}
         className="w-[150px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
       >
-        <span className="truncate">
-          {row.original.company_id?.name || "N/A"}
-        </span>
+        <span className="truncate">{row.original.company_id?.name || "-"}</span>
         <ExternalLink size={12} />
       </Link>
     ),
@@ -113,7 +111,7 @@ export const columns: ColumnDef<ExtendedSoaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.original.company_id?.company_name || "N/A"}
+        {row.original.company_id?.company_name || "-"}
       </div>
     ),
     enableSorting: false,

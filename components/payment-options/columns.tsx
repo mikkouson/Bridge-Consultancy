@@ -69,7 +69,7 @@ export const columns: ColumnDef<PaymentOptionsSchemaType>[] = [
     cell: ({ row }) => {
       const value = row.getValue("bank_address") as string;
       return (
-        <div className="w-[120px] truncate font-medium">{value || "N/A"}</div>
+        <div className="w-[120px] truncate font-medium">{value || "-"}</div>
       );
     },
     enableSorting: false,

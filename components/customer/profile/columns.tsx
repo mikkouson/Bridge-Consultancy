@@ -32,7 +32,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.original.companies?.company_name || "N/A"}
+        {row.original.companies?.company_name || "-"}
       </div>
     ),
     enableSorting: false,
@@ -60,7 +60,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.original.payment_options?.bank_name || "N/A"}
+        {row.original.payment_options?.bank_name || "-"}
       </div>
     ),
     enableSorting: false,

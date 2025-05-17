@@ -34,10 +34,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
         href={`customers/${row.original.companies?.id}`}
         className="w-[220px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
       >
-        <span className="truncate">
-          {" "}
-          {row.original.companies?.name || "N/A"}
-        </span>
+        <span className="truncate"> {row.original.companies?.name || "-"}</span>
         <ExternalLink size={12} />
       </Link>
     ),
@@ -57,7 +54,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.original.companies?.company_name || "N/A"}
+        {row.original.companies?.company_name || "-"}
       </div>
     ),
     enableSorting: false,
@@ -85,7 +82,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.original.payment_options?.bank_name || "N/A"}
+        {row.original.payment_options?.bank_name || "-"}
       </div>
     ),
     enableSorting: false,

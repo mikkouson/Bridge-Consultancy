@@ -14,7 +14,7 @@ export const columns: ColumnDef<PaymentsSchemaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[150px] truncate font-medium">
-        {row.original?.invoices?.invoice_number || "N/A"}
+        {row.original?.invoices?.invoice_number || "-"}
       </div>
     ),
     enableSorting: false,
@@ -59,7 +59,7 @@ export const columns: ColumnDef<PaymentsSchemaType>[] = [
       <DataTableColumnHeader column={column} title="Amount" />
     ),
     cell: ({ row }) => {
-      const currencyCode = row.original?.invoices?.currency || "N/A";
+      const currencyCode = row.original?.invoices?.currency || "-";
 
       const currencySymbols: Record<string, string> = {
         USD: "$",
