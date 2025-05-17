@@ -5,9 +5,8 @@ export const CustomerSchema = z.object({
   name: z.string().min(1, { message: "Name must be at least 1 character." }),
   company_name: z.string().optional(),
   email: z.string().email({ message: "Invalid email address." }),
-  contact: z.string().min(10, {
-    message: "Contact must be at least 10 characters.",
-  }),
+  contact: z.string().optional(),
+
   deleted_at: z.string().optional(),
 });
 

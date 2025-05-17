@@ -118,7 +118,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {customer.invoices[0].currency} {customer.balance.toFixed(2)}
+              {customer.invoices[0]?.currency} {customer.balance.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">
               Current outstanding balance
@@ -149,7 +149,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {customer.invoices[0].currency}{" "}
+              {customer.invoices[0]?.currency}{" "}
               {customer.invoices
                 .reduce(
                   (
