@@ -51,7 +51,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
       <Card className="mb-8 border-none bg-card-foreground dark:bg-muted shadow-md  ">
         <CardContent className="p-6">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-            <div className="flex items-center gap-5 text-white">
+            <div className="flex items-center gap-5 text-white w-full">
               <Avatar className="h-16 w-16 border-0 bg-muted-foreground">
                 <AvatarFallback className="text-xl font-light bg-muted-foreground">
                   {getInitials(customer.name)}
@@ -63,18 +63,23 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
                 <h1 className="text-3xl font-bold ">{customer.name}</h1>
                 <div className="mt-2 flex flex-col gap-2 text-sm  sm:flex-row sm:gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <Building2 className="h-4 w-4 " />
-                    {customer.company_name}
-                  </div>
+                  {customer.company_name && (
+                    <div className="flex items-center gap-1.5">
+                      <Building2 className="h-4 w-4 " />
+                      {customer.company_name}
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-1.5">
                     <Mail className="h-4 w-4" />
                     <span> {customer.email}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Phone className="h-4 w-4" />
-                    <span> {customer.contact}</span>
-                  </div>
+                  {customer.contact && (
+                    <div className="flex items-center gap-1.5">
+                      <Phone className="h-4 w-4" />
+                      <span> {customer.contact}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
