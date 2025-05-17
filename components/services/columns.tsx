@@ -11,7 +11,7 @@ export const columns: ColumnDef<ServicesSchemaType>[] = [
       <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
-      <div className="w-[150px] truncate font-medium">
+      <div className="w-[250px] truncate font-medium">
         {row.getValue("name")}
       </div>
     ),
@@ -22,19 +22,19 @@ export const columns: ColumnDef<ServicesSchemaType>[] = [
       return cellValue?.toLowerCase().includes(filterValue.toLowerCase());
     },
   },
-  {
-    accessorKey: "description",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Description" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[150px] truncate font-medium">
-        {row.getValue("description")}
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   accessorKey: "description",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Description" />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-[150px] truncate font-medium">
+  //       {row.getValue("description")}
+  //     </div>
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "amount",
     header: ({ column }) => (
@@ -48,22 +48,22 @@ export const columns: ColumnDef<ServicesSchemaType>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "vat_amount",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Vat Amount" />
-    ),
-    cell: ({ row }) => {
-      const vatAmount = row.getValue("vat_amount") as number | null; // Explicitly type it
-      return (
-        <div className="w-[120px] truncate font-medium">
-          {typeof vatAmount === "number" ? vatAmount : "0"}
-        </div>
-      );
-    },
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   accessorKey: "vat_amount",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Vat Amount" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     const vatAmount = row.getValue("vat_amount") as number | null; // Explicitly type it
+  //     return (
+  //       <div className="w-[120px] truncate font-medium">
+  //         {typeof vatAmount === "number" ? vatAmount : "0"}
+  //       </div>
+  //     );
+  //   },
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
 
   {
     header: ({ column }) => (

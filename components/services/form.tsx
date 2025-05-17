@@ -32,7 +32,7 @@ export function ServiceForm({
     defaultValues: {
       id: data?.id ?? 0,
       name: data?.name ?? "",
-      description: data?.description ?? "",
+      // description: data?.description ?? "",
       amount: data?.amount ?? 0,
       vat_amount: data.vat_amount ?? 0,
     },
@@ -98,7 +98,7 @@ export function ServiceForm({
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="description"
           render={({ field }) => (
@@ -111,7 +111,7 @@ export function ServiceForm({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}
