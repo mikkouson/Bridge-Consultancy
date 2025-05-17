@@ -17,7 +17,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
       <DataTableColumnHeader column={column} title="Invoice Number" />
     ),
     cell: ({ row }) => (
-      <div className="w-[150px] truncate font-medium">
+      <div className="w-[80px] truncate font-medium">
         {row.getValue("invoice_number")}
       </div>
     ),
@@ -32,7 +32,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     cell: ({ row }) => (
       <Link
         href={`customers/${row.original.companies?.id}`}
-        className="w-[150px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
+        className="w-[220px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
       >
         <span className="truncate">
           {" "}
@@ -72,7 +72,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
     cell: ({ row }) => {
       const formattedDate = moment(row.getValue("date")).format("MMMM D, YYYY");
       return (
-        <div className="w-[120px] truncate font-medium">{formattedDate}</div>
+        <div className="w-[110px] truncate font-medium">{formattedDate}</div>
       );
     },
     enableSorting: true,
@@ -98,7 +98,7 @@ export const columns: ColumnDef<InvoicesSchemaType>[] = [
       <DataTableColumnHeader column={column} title="Currency" />
     ),
     cell: ({ row }) => (
-      <div className="w-[120px] truncate font-medium">
+      <div className="w-[30px] truncate font-medium">
         {row.getValue("currency")}
       </div>
     ),

@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ComboboxForm } from "../popover";
+import { PaymentOptionsSelect } from "./payment-options";
 
 interface InvoiceDetailsSectionProps {
   form: UseFormReturn<InvoicesSchemaType>;
@@ -220,11 +221,16 @@ export function InvoiceDetailsSection({ form }: InvoiceDetailsSectionProps) {
               <CreditCard className="h-4 w-4" />
               Payment Details
             </FormLabel>
-            <ComboboxForm
+            {/* <ComboboxForm
               data={payment_option}
               form={form}
               name="payment_option"
               formName="bank_name"
+            /> */}
+            <PaymentOptionsSelect
+              data={payment_option}
+              form={form}
+              name="payment_option"
             />
           </div>
           <div className="md:col-span-1 lg: col-span-2 pointer-events-none opacity-50">
