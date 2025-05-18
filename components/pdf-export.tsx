@@ -1,5 +1,4 @@
 "use client";
-import { CompanySchemaType } from "@/app/types/companies.type";
 import { Button } from "@/components/ui/button";
 import {
   Document,
@@ -38,16 +37,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const PDFTable = ({ data }: { data: CompanySchemaType[] }) => {
+type TableData = {
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | Date
+    | Record<string, unknown>;
+};
+
+const PDFTable = ({ title, data }: { title: string; data: TableData[] }) => {
+  if (data.length === 0) return null;
   const filteredData = data.map(({ id, deleted_at, ...rest }) => rest);
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Company Directory Report</Text>
+        <Text style={styles.title}>{title}</Text>
         <View>
           <View style={[styles.row, styles.header]}>
-            {Object.keys(filteredData[0] || {}).map((key) => (
+            {Object.keys(filteredData[0]).map((key) => (
               <Text key={key} style={styles.cell}>
                 {key.toUpperCase()}
               </Text>
@@ -57,7 +68,7 @@ const PDFTable = ({ data }: { data: CompanySchemaType[] }) => {
             <View key={index} style={styles.row}>
               {Object.keys(row).map((key) => (
                 <Text key={key} style={styles.cell}>
-                  {String(row[key as keyof typeof row]) || "-"}
+                  {String(row[key] ?? "-")}
                 </Text>
               ))}
             </View>
@@ -68,20 +79,28 @@ const PDFTable = ({ data }: { data: CompanySchemaType[] }) => {
   );
 };
 
-export const PdfExport = ({ data }: { data: CompanySchemaType[] }) => {
+export const PdfExport = ({
+  title,
+  data,
+  fileName,
+}: {
+  title: string;
+  data: TableData[];
+  fileName: string;
+}) => {
   return (
     <PDFDownloadLink
-      document={<PDFTable data={data} />}
-      fileName="companies.pdf"
+      document={<PDFTable title={title} data={data} />}
+      fileName={fileName}
       className="w-full"
     >
       {({ loading }) => (
         <Button
           variant="ghost"
           size="sm"
-          className="text-sm  w-full text-left justify-start p-0"
+          className="text-sm w-full text-left justify-start p-0"
         >
-          <span className=" w-ful text-left">
+          <span className="w-full text-left">
             {loading ? "Exporting..." : "PDF"}
           </span>
         </Button>

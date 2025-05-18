@@ -6,6 +6,11 @@ import {
   LayoutDashboard,
   Receipt,
   Settings2,
+  HandCoins,
+  CreditCard,
+  UserCog,
+  NotebookText,
+  ReceiptText,
 } from "lucide-react";
 import * as React from "react";
 
@@ -42,14 +47,39 @@ const data = {
       isActive: true,
     },
     {
-      title: "Companies",
-      url: "companies",
+      title: "Customers",
+      url: "customers",
       icon: Building2,
     },
     {
       title: "Invoices",
       url: "invoices",
+      icon: ReceiptText,
+    },
+    {
+      title: "Payments",
+      url: "payments",
       icon: Receipt,
+    },
+    {
+      title: "Services",
+      url: "services",
+      icon: HandCoins,
+    },
+    {
+      title: "Payment Options",
+      url: "payment-options",
+      icon: CreditCard,
+    },
+    {
+      title: "Statement of Accounts",
+      url: "soa",
+      icon: NotebookText,
+    },
+    {
+      title: "Users",
+      url: "users",
+      icon: UserCog,
     },
     {
       title: "Settings",

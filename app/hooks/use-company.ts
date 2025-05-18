@@ -1,10 +1,21 @@
+"use client";
 import { useEffect } from "react";
 import useSWR from "swr";
 import { createClient } from "@/utils/supabase/client";
-export function useCompany() {
-  const { data, mutate } = useSWR("/api/companies", (url) =>
+import { useRouter } from "next/navigation";
+export function useCustomer() {
+  const router = useRouter();
+
+  const { data, mutate, isLoading, error } = useSWR("/api/companies", (url) =>
     fetch(url).then((res) => res.json())
   );
+
+  useEffect(() => {
+    if (error) {
+      const statusCode = error.response?.status;
+      router.push(`/errors/${statusCode || 500}`);
+    }
+  }, [error, router]);
 
   const supabase = createClient();
 
@@ -24,7 +35,7 @@ export function useCompany() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, mutate]);
+  }, [supabase, mutate, error]);
 
-  return { data, mutate };
+  return { data, mutate, isLoading, error };
 }

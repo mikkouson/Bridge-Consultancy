@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { signOutAction } from "@/app/login/action";
+import { signOutAction } from "@/app/(auth)/login/action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,

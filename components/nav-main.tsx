@@ -1,7 +1,7 @@
 "use client";
 
 import { type LucideIcon } from "lucide-react";
-
+import { usePathname } from "next/navigation";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
@@ -29,41 +29,61 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const pathname = usePathname();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <Link href={item.url}>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </Link>
+        {items.map((item) => {
+          const itemUrl = `/${item.url.replace(/^\/+/, "")}`;
+          const isActive = pathname.startsWith(itemUrl);
 
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
+          return (
+            <Collapsible
+              key={item.title}
+              asChild
+              defaultOpen={isActive}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <Link href={itemUrl}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={isActive ? "bg-gray-200 dark:bg-gray-700" : ""}
+                  >
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </Link>
+
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items?.map((subItem) => {
+                      const subUrl = `/${subItem.url.replace(/^\/+/, "")}`;
+                      const isSubActive = pathname === subUrl;
+
+                      return (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton
+                            asChild
+                            className={
+                              isSubActive ? "bg-gray-200 dark:bg-gray-700" : ""
+                            }
+                          >
+                            <Link href={subUrl}>
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );
