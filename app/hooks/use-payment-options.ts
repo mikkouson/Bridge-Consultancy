@@ -1,10 +1,21 @@
 import { useEffect } from "react";
 import useSWR from "swr";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 export function usePaymentOptions() {
-  const { data, mutate } = useSWR("/api/payment-options", (url) =>
-    fetch(url).then((res) => res.json())
+  const router = useRouter();
+
+  const { data, mutate, isLoading, error } = useSWR(
+    "/api/payment-options",
+    (url) => fetch(url).then((res) => res.json())
   );
+
+  useEffect(() => {
+    if (error) {
+      const statusCode = error.response?.status;
+      router.push(`/errors/${statusCode || 500}`);
+    }
+  }, [error, router]);
 
   const supabase = createClient();
 
@@ -25,6 +36,5 @@ export function usePaymentOptions() {
       supabase.removeChannel(channel);
     };
   }, [supabase, mutate]);
-
-  return { data, mutate };
+  return { data, mutate, isLoading, error };
 }

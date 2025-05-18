@@ -1,3 +1,5 @@
+"use client";
+
 import { LoaderPinwheel } from "lucide-react";
 
 const Loader = () => {
