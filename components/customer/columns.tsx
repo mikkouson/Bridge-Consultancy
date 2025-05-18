@@ -15,7 +15,7 @@ export const columns: ColumnDef<CustomerSchemaType>[] = [
     cell: ({ row }) => (
       <Link
         href={`customers/${row.original.id}`}
-        className="w-[150px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
+        className="w-[200px] truncate font-medium text-blue-600 hover:underline flex items-center gap-1"
       >
         <span className="truncate">{row.getValue("name")}</span>
         <ExternalLink size={12} />
@@ -65,7 +65,7 @@ export const columns: ColumnDef<CustomerSchemaType>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-[120px] truncate font-medium">
-        {row.getValue("contact")}
+        {row.getValue("contact") || "-"}
       </div>
     ),
     enableSorting: false,
