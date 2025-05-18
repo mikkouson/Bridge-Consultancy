@@ -1,11 +1,20 @@
 import { useEffect } from "react";
 import useSWR from "swr";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+
 export function useUsers() {
-  const { data, mutate } = useSWR("/api/users", (url) =>
+  const router = useRouter();
+
+  const { data, mutate, isLoading, error } = useSWR("/api/users", (url) =>
     fetch(url).then((res) => res.json())
   );
-
+  useEffect(() => {
+    if (error) {
+      const statusCode = error.response?.status;
+      router.push(`/errors/${statusCode || 500}`);
+    }
+  }, [error, router]);
   const supabase = createClient();
 
   // Subscribe to realtime updates for appointments
@@ -26,5 +35,5 @@ export function useUsers() {
     };
   }, [supabase, mutate]);
 
-  return { data, mutate };
+  return { data, mutate, isLoading, error };
 }

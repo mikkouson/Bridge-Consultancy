@@ -13,7 +13,7 @@ import { format } from "date-fns";
 interface SoaSummaryProps {
   openingBalance: number;
   statementEntries: Array<{
-    entry_date: Date;
+    date: Date;
     transaction_type: "Invoice" | "Payment Received";
     reference: string;
     amount?: number;

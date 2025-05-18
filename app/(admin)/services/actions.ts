@@ -14,7 +14,7 @@ export async function createService(formData: ServicesSchemaType) {
 
   const { data, error } = await supabase.from("services").insert({
     name: formData.name,
-    description: formData.description,
+    // description: formData.description,
     amount: formData.amount,
   });
 
@@ -55,7 +55,7 @@ export async function updateService(formData: ServicesSchemaType) {
     .from("services")
     .update({
       name: formData.name,
-      description: formData.description,
+      // description: formData.description,
       amount: formData.amount,
     })
     .eq("id", formData.id);

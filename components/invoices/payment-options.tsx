@@ -2,7 +2,7 @@
 
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, FieldValues, Path } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -38,19 +38,26 @@ interface PaymentOption {
   deleted_at: null | string;
 }
 
-interface PaymentOptionsSelectProps {
+// Generic type for the form values
+interface PaymentOptionsSelectProps<
+  TFieldValues extends FieldValues,
+  TName extends Path<TFieldValues>
+> {
   data: PaymentOption[];
-  form: UseFormReturn<any>;
-  name: string;
+  form: UseFormReturn<TFieldValues>;
+  name: TName;
   onValueChange?: (value: string) => void;
 }
 
-export function PaymentOptionsSelect({
+export function PaymentOptionsSelect<
+  TFieldValues extends FieldValues,
+  TName extends Path<TFieldValues>
+>({
   data,
   form,
   name,
   onValueChange,
-}: PaymentOptionsSelectProps) {
+}: PaymentOptionsSelectProps<TFieldValues, TName>) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -97,7 +104,10 @@ export function PaymentOptionsSelect({
                         key={option.id}
                         value={`${option.bank_name} ${option.currency}`}
                         onSelect={() => {
-                          form.setValue(name, option.id);
+                          form.setValue(
+                            name,
+                            option.id as unknown as TFieldValues[TName]
+                          );
                           if (onValueChange) {
                             onValueChange(option.id.toString());
                           }

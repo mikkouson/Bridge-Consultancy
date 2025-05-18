@@ -130,12 +130,17 @@ export function CustomerForm({
             </FormItem>
           )}
         />
+
+        <Separator className="my-2" />
         <FormField
           control={form.control}
           name="contact"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contact </FormLabel>
+              <FormLabel>
+                Contact{" "}
+                <span className=" text-muted-foreground">(Optional)</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Contact" {...field} />
               </FormControl>
@@ -144,8 +149,6 @@ export function CustomerForm({
             </FormItem>
           )}
         />
-        <Separator className="my-2" />
-
         <FormField
           control={form.control}
           name="company_name"

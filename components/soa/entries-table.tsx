@@ -1,6 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
+import moment from "moment";
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/card";
 
 interface StatementEntry {
-  entry_date: Date;
+  date: Date;
   transaction_type: "Invoice" | "Payment Received";
   reference: string;
   amount?: number;
@@ -40,13 +40,10 @@ export function EntriesTable({
   currency = "AED",
   getCurrencySymbol,
 }: EntriesTableProps) {
-  // Sort entries by date
   const sortedEntries = [...entries].sort(
-    (a, b) =>
-      new Date(a.entry_date).getTime() - new Date(b.entry_date).getTime()
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
-  // Use provided getCurrencySymbol function or fallback to local implementation
   const getSymbol =
     getCurrencySymbol ||
     ((currencyCode: string) => {
@@ -94,7 +91,7 @@ export function EntriesTable({
                   }-${index}`}
                 >
                   <TableCell>
-                    {format(new Date(entry.entry_date), "dd/MM/yyyy")}
+                    {moment(entry.date).format("DD/MM/YYYY")}
                   </TableCell>
                   <TableCell>{entry.reference}</TableCell>
                   <TableCell className="text-right">

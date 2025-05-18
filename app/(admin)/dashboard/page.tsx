@@ -1,7 +1,9 @@
-import React from "react";
+import OverViewPage from './_components/overview';
 
-const Dashboard = () => {
-  return <div>Dashboard</div>;
+export const metadata = {
+  title: 'Dashboard : Overview'
 };
 
-export default Dashboard;
+export default function page() {
+  return <OverViewPage />;
+}

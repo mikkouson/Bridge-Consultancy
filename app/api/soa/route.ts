@@ -10,7 +10,10 @@ export async function GET() {
       `
       *,
 
-      company_id(*)
+       company_id(*),
+      payment_option(*),
+      statement_entries(*)
+
 
       `
     )

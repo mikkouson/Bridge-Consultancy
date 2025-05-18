@@ -9,6 +9,8 @@ import {
   HandCoins,
   CreditCard,
   UserCog,
+  NotebookText,
+  ReceiptText,
 } from "lucide-react";
 import * as React from "react";
 
@@ -52,7 +54,7 @@ const data = {
     {
       title: "Invoices",
       url: "invoices",
-      icon: Receipt,
+      icon: ReceiptText,
     },
     {
       title: "Payments",
@@ -72,7 +74,7 @@ const data = {
     {
       title: "Statement of Accounts",
       url: "soa",
-      icon: Receipt,
+      icon: NotebookText,
     },
     {
       title: "Users",

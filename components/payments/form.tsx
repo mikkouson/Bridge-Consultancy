@@ -29,6 +29,8 @@ const payment_mode = [
   { id: "Cash", name: "Cash" },
   { id: "Crypto", name: "Crypto" },
 ];
+import { useRouter } from "next/navigation";
+
 export function PaymentForm({
   data = {},
   id,
@@ -52,6 +54,7 @@ export function PaymentForm({
     },
   });
   const { isSubmitting } = form.formState;
+  const router = useRouter();
 
   async function onSubmit(data: z.infer<typeof PaymentsSchema>) {
     try {
@@ -72,6 +75,7 @@ export function PaymentForm({
         ),
         duration: 2000,
       });
+      router.push("/invoices");
     } catch (error) {
       toast({
         variant: "destructive",
