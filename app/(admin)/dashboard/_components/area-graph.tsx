@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -12,39 +12,140 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+// Define interface for invoice data
+interface Invoice {
+  date: string;
+  status: "paid" | "pending" | string;
+  total_amount: number;
+}
+
+// Define interface for daily chart data
+interface DailyChartData {
+  date: string;
+  formattedDate: string;
+  paid: number;
+  pending: number;
+}
+
+// Transform invoice data into daily chart-friendly format
+const transformInvoiceData = (invoiceData: Invoice[]): DailyChartData[] => {
+  // Create a map to store daily totals
+  const dailyData = new Map<string, DailyChartData>();
+
+  // Process each invoice
+  if (invoiceData && Array.isArray(invoiceData)) {
+    // Sort invoices by date
+    const sortedInvoices = [...invoiceData].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Get date range
+    let startDate = new Date();
+    let endDate = new Date();
+
+    if (sortedInvoices.length > 0) {
+      startDate = new Date(sortedInvoices[0].date);
+      endDate = new Date(sortedInvoices[sortedInvoices.length - 1].date);
+
+      // If we have less than 30 days of data, extend to at least 30 days
+      const daysDiff = Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (daysDiff < 30) {
+        // Add some days before and after to create a better visual
+        const newStartDate = new Date(startDate);
+        newStartDate.setDate(newStartDate.getDate() - 5);
+
+        const newEndDate = new Date(endDate);
+        newEndDate.setDate(newEndDate.getDate() + 5);
+
+        startDate = newStartDate;
+        endDate = newEndDate;
+      }
+    } else {
+      // Default to last 30 days if no invoices
+      startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+    }
+
+    // Initialize all days in the range with zeros
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const dateStr = currentDate.toISOString().split("T")[0];
+      dailyData.set(dateStr, {
+        date: dateStr,
+        formattedDate: formatDate(dateStr),
+        paid: 0,
+        pending: 0,
+      });
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Fill in the actual invoice data
+    sortedInvoices.forEach((invoice) => {
+      const dateStr = new Date(invoice.date).toISOString().split("T")[0];
+
+      if (dailyData.has(dateStr)) {
+        const dayData = dailyData.get(dateStr)!;
+
+        // Update based on invoice status
+        if (invoice.status === "paid") {
+          dayData.paid += invoice.total_amount;
+        } else {
+          dayData.pending += invoice.total_amount;
+        }
+      }
+    });
+  }
+
+  // Convert map to array for the chart
+  return Array.from(dailyData.values());
+};
+
+// Format date for display
+const formatDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+};
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  paid: {
+    label: "Paid Invoices",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  pending: {
+    label: "Pending Invoices",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
-export function AreaGraph() {
+interface AreaGraphProps {
+  invoiceData: Invoice[];
+}
+
+export function AreaGraph({ invoiceData }: AreaGraphProps) {
+  // Generate chart data from the provided invoice data
+  const chartData = transformInvoiceData(invoiceData);
+
+  // Get date range for display
+  const startDate = chartData.length > 0 ? chartData[0].formattedDate : "";
+  const endDate =
+    chartData.length > 0 ? chartData[chartData.length - 1].formattedDate : "";
+  const dateRange =
+    startDate && endDate ? `${startDate} - ${endDate}` : "No data available";
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
+        <CardTitle>Daily Invoice Analytics</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          Showing paid and pending invoices by day
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -58,34 +159,45 @@ export function AreaGraph() {
             margin={{
               left: 12,
               right: 12,
+              top: 20,
+              bottom: 10,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="formattedDate"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              // Show fewer ticks for readability
+              interval="preserveStartEnd"
+              minTickGap={30}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => `${value} AED`}
+              domain={[0, "dataMax + 1000"]} // Add some padding to the top
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="mobile"
+              dataKey="pending"
               type="natural"
-              fill="var(--color-mobile)"
+              fill="var(--color-pending, #f59e0b)"
               fillOpacity={0.4}
-              stroke="var(--color-mobile)"
+              stroke="var(--color-pending, #f59e0b)"
               stackId="a"
             />
             <Area
-              dataKey="desktop"
+              dataKey="paid"
               type="natural"
-              fill="var(--color-desktop)"
+              fill="var(--color-paid, #10b981)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              stroke="var(--color-paid, #10b981)"
               stackId="a"
             />
           </AreaChart>
@@ -95,10 +207,17 @@ export function AreaGraph() {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+              {invoiceData.length > 0 ? (
+                <>
+                  Showing {invoiceData.length} invoice(s){" "}
+                  <TrendingUp className="h-4 w-4" />
+                </>
+              ) : (
+                "No invoice data available"
+              )}
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
+              {dateRange}
             </div>
           </div>
         </div>

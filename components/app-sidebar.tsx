@@ -81,15 +81,24 @@ const data = {
       url: "users",
       icon: UserCog,
     },
-    {
-      title: "Settings",
-      url: "settings",
-      icon: Settings2,
-    },
+    // {
+    //   title: "Settings",
+    //   url: "settings",
+    //   icon: Settings2,
+    // },
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  user,
+  ...props
+}: {
+  user: {
+    name: string;
+    email: string;
+    avatar: string;
+  };
+} & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -99,7 +108,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
